@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="ru.pds.eventsapp.ViewModels.ProfileAuthorizedFragmentVM" />
+    </data>
+
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/avatar"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            app:srcCompat="@drawable/com_facebook_profile_picture_blank_square"
+            android:layout_centerHorizontal="true"
+            app:civ_border_width="1dp"
+            android:layout_alignParentTop="true"
+            app:civ_border_color="@color/colorBackground"/>
+
+
+        <com.gigamole.navigationtabstrip.NavigationTabStrip
+            android:id="@+id/nts_top"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_gravity="center"
+            app:nts_active_color="#42a4d1"
+            app:nts_color="#42a4d1"
+            app:nts_corners_radius="1dp"
+            app:nts_inactive_color="#ff1a1e23"
+            app:nts_size="15sp"
+            app:nts_weight="3dp"
+            android:layout_below="@+id/avatar"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp"
+            android:layout_below="@id/nts_top"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </RelativeLayout>
+
+</layout>
