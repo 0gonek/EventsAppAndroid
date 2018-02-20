@@ -16,6 +16,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.pds.eventsapp.Models.LoginModel;
+import ru.pds.eventsapp.Models.PojoSmallEvents;
 import ru.pds.eventsapp.Services.ApiService;
 
 public class WalkerApi {
@@ -42,6 +43,15 @@ public class WalkerApi {
         Single<LoginModel> call = loginService.loginVK(id, token);
         return call.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
+
+    }
+
+    public Single<PojoSmallEvents> profileEvents(int type) {
+
+        ApiService apiService = getApiService();
+        Single<PojoSmallEvents> call = apiService.profileEvents(type,AuthenticatorSingleton.getInstance().currentUser.serverID,AuthenticatorSingleton.getInstance().accessToken);
+        return call.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
 
     }
 

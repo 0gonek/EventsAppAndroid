@@ -17,6 +17,7 @@ import com.stfalcon.socialauthhelper.vk.data.model.profile.VkProfile;
 import io.reactivex.Single;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import ru.pds.eventsapp.Helpers.RxBus;
 import ru.pds.eventsapp.Models.LoginModel;
 import ru.pds.eventsapp.R;
 import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
@@ -36,6 +37,8 @@ public class ProfileFragmentVM extends FragmentViewModel<ProfileFragment> {
                             public void accept(@NonNull LoginModel loginModel) throws Exception {
                                 Toast.makeText(getFragment().getContext(), "Success", Toast.LENGTH_SHORT).show();
                                 AuthenticatorSingleton.getInstance().saveLogin(getFragment().getContext(), id, token, integrationType, loginModel);
+                                RxBus.instanceOf().logged(new Object());
+
                             }
                         },
                 new Consumer<Throwable>() {

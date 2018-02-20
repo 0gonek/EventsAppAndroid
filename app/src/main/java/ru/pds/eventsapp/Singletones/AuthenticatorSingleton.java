@@ -1,5 +1,6 @@
 package ru.pds.eventsapp.Singletones;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -8,6 +9,7 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import retrofit2.Call;
 import retrofit2.Callback;
+import ru.pds.eventsapp.Helpers.RxBus;
 import ru.pds.eventsapp.Models.LoginModel;
 
 /**
@@ -22,7 +24,7 @@ public class AuthenticatorSingleton {
 
     public LoginModel currentUser;
 
-    private String accessToken;
+    public String accessToken;
     private String integrationID;
     private String integrationType;
 
@@ -61,6 +63,7 @@ public class AuthenticatorSingleton {
         Consumer<LoginModel> callback =  new Consumer<LoginModel>() {
             @Override
             public void accept(@NonNull LoginModel loginModel) throws Exception {
+                RxBus.instanceOf().logged(new Object());
                 saveLogin(ctx, integrationID, accessToken,integrationType, loginModel);
             }
         };

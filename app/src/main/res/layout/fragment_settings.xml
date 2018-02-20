@@ -12,6 +12,40 @@
 
     <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:id="@+id/exit_button">
+
+                <TextView
+                    android:text="Выйти из профиля"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textView3"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="56dp"
+                    android:layout_centerVertical="true"
+                    android:textColor="#444" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_input_gray_transparent_24dp"
+                    android:id="@+id/imageView3"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
+
+        </LinearLayout>
     </RelativeLayout>
 
 </layout>

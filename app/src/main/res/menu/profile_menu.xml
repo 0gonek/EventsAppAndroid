@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_refresh"
+        android:enabled="true"
+        android:icon="@drawable/ic_cached_transparent_gray_24dp"
+        android:title="Обновить"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_change_name"
+        android:enabled="true"
+        android:icon="@drawable/ic_mode_edit_transparent_gray_24dp"
+        android:title="Изменить имя"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_logout"
+        android:enabled="true"
+        android:icon="@drawable/ic_input_gray_transparent_24dp"
+        android:title="Выйти"
+        app:showAsAction="ifRoom" />
+</menu>

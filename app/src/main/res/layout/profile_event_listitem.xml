@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="ru.pds.eventsapp.ViewModels.ProfileEventListitemFragmentVM" />
+    </data>
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="vertical"
+            android:layout_centerVertical="true">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/eventName"
+                    android:layout_alignParentLeft="true"
+                    android:text="@{viewModel.name}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    android:layout_toLeftOf="@+id/date_badge"
+                    android:layout_marginRight="4dp"
+                    android:maxLines="1" />
+
+                <RelativeLayout
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/profile_event_datetime_bg"
+                    android:layout_alignParentRight="true"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/date_badge"
+                    android:layout_centerVertical="true">
+
+                    <ImageView
+                        app:srcCompat="@drawable/ic_access_time_black_24dp"
+                        android:id="@+id/imageView2"
+                        android:layout_gravity="center_vertical"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginRight="4dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:layout_width="15sp"
+                        android:layout_height="15sp" />
+
+                    <TextView
+                        android:text="@{viewModel.date}"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/date_time_text"
+                        android:layout_alignParentTop="true"
+                        android:layout_toEndOf="@+id/imageView2"
+                        android:textSize="14sp"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="6dp"
+                        android:textColor="#66000000" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <TextView
+                android:text="@{viewModel.desc}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/eventDesc"
+                android:textSize="16sp"
+                android:maxLines="1" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+</layout>
