@@ -30,6 +30,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import jp.wasabeef.blurry.Blurry;
+import ru.pds.eventsapp.Helpers.RxBus;
 import ru.pds.eventsapp.R;
 import ru.pds.eventsapp.BR;
 
@@ -124,9 +125,10 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
             }
 
         });
+
         getBinding().ntsTop.setViewPager(getBinding().vp, 2);
 
-        getBinding().appBarImage.post(new Runnable() {
+        /*getBinding().appBarImage.post(new Runnable() {
             @Override
             public void run() {
                 Blurry.with(getContext())
@@ -137,7 +139,7 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
                         .capture(getBinding().appBarImage)
                         .into(getBinding().appBarImage);
             }
-        });
+        });*/
 
         getViewModel().avatarListener = new Runnable() {
             @Override
@@ -155,8 +157,8 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
                     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
 
                         Blurry.with(getContext())
-                                .radius(10)
-                                .sampling(8)
+                                .radius(4)
+                                .sampling(1)
                                 .color(Color.argb(20, 0, 0, 0))
                                 .async()
                                 .from(bitmap)
@@ -165,12 +167,11 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
 
                     @Override
                     public void onBitmapFailed(Drawable errorDrawable) {
-                        Log.d("123","123");
+                        Log.d("123", "123");
                     }
 
                     @Override
                     public void onPrepareLoad(Drawable placeHolderDrawable) {
-                        Log.d("123","123");
 
                     }
                 };

@@ -10,6 +10,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import ru.pds.eventsapp.Models.LoginModel;
+import ru.pds.eventsapp.Models.PojoEventsForMap;
 import ru.pds.eventsapp.Models.PojoSmallEvents;
 
 /**
@@ -28,4 +29,18 @@ public interface ApiService {
             @Query("type") int type,
             @Query("id") long userID,
             @Query("token") String token );
+    @GET("/events/get_between")
+    Single<PojoEventsForMap> mapEvents(
+            @Query("min_lat") double minLat,
+            @Query("max_lat") double maxLat,
+            @Query("min_lon") double minLon,
+            @Query("max_lon") double maxLon,
+            @Query("id") long userID,
+            @Query("token") String token );
+    @GET("/events/get_between")
+    Single<PojoEventsForMap> mapEventsPublic(
+            @Query("min_lat") double minLat,
+            @Query("max_lat") double maxLat,
+            @Query("min_lon") double minLon,
+            @Query("max_lon") double maxLon);
 }

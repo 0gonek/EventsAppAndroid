@@ -23,7 +23,7 @@ public class FragmentsStore {
     private GroupsFragment groupsFragment;
     private SettingsFragment settingsFragment;
     private ProfileAuthorizedFragment authorizedFragment;
-
+    private boolean isLogged = false;
     private FragmentsStore() {
         mapFragment = new MapFragment();
         profileFragment = new ProfileFragment();
@@ -36,6 +36,9 @@ public class FragmentsStore {
     }
 
     public ProfileFragment getProfileFragment() {
+        if(isLogged)
+            authorizedFragment = null;
+        
         return profileFragment;
     }
 

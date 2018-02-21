@@ -36,6 +36,9 @@ public class ProfileAuthorizedFragmentVM extends FragmentViewModel<ProfileAuthor
 
     public void refresh(){
 
+
+
+
     }
     public void changeName(){
 

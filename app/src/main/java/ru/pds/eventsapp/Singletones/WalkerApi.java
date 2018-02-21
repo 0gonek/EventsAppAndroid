@@ -16,6 +16,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.pds.eventsapp.Models.LoginModel;
+import ru.pds.eventsapp.Models.PojoEventsForMap;
 import ru.pds.eventsapp.Models.PojoSmallEvents;
 import ru.pds.eventsapp.Services.ApiService;
 
@@ -42,18 +43,29 @@ public class WalkerApi {
         ApiService loginService = getApiService();
         Single<LoginModel> call = loginService.loginVK(id, token);
         return call.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread());
+                .observeOn(AndroidSchedulers.mainThread());
 
     }
 
     public Single<PojoSmallEvents> profileEvents(int type) {
 
         ApiService apiService = getApiService();
-        Single<PojoSmallEvents> call = apiService.profileEvents(type,AuthenticatorSingleton.getInstance().currentUser.serverID,AuthenticatorSingleton.getInstance().accessToken);
+        Single<PojoSmallEvents> call = apiService.profileEvents(type, AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken);
         return call.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-
     }
 
+    public Single<PojoEventsForMap> mapEvents(double minLat, double minLon, double maxLat, double maxLon) {
+
+        ApiService apiService = getApiService();
+        Single<PojoEventsForMap> call;
+        if (AuthenticatorSingleton.getInstance().currentUser != null)
+            call = apiService.mapEvents(minLat, maxLat, minLon, maxLon, AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken);
+        else
+            call = apiService.mapEventsPublic(minLat, maxLat, minLon, maxLon);
+
+        return call.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 
 }

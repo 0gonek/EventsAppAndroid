@@ -42,12 +42,9 @@ public class NavigationActivity extends BindingActivity<ActivityNavigationBindin
         ft.setCustomAnimations(R.anim.anim_main_fragment_in, R.anim.anim_main_fragment_out);
 
         if (oldFragmentTag != null && fragmentManager.findFragmentByTag(oldFragmentTag) != null)
-            ft.hide(fragmentManager.findFragmentByTag(oldFragmentTag));
+            ft.remove(fragmentManager.findFragmentByTag(oldFragmentTag));
+        ft.add(R.id.mainFragment, newFragment, tag);
 
-        if (fragmentManager.findFragmentByTag(tag) != null)
-            ft.show(fragmentManager.findFragmentByTag(tag));
-        else
-            ft.add(R.id.mainFragment, newFragment, tag);
 
         currentFragment = newFragment;
         oldFragmentTag = tag;
