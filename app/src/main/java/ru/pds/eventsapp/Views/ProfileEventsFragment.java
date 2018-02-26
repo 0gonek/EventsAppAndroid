@@ -5,6 +5,7 @@ package ru.pds.eventsapp.Views;
  */
 
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.View;
 
 import com.stfalcon.androidmvvmhelper.mvvm.fragments.BindingFragment;
 
@@ -32,7 +33,6 @@ public class ProfileEventsFragment extends BindingFragment<ProfileEventsFragment
     protected ProfileEventsFragmentVM onCreateViewModel(FragmentProfileEventsBinding binding) {
 
         getBinding().eventsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-
 
         return new ProfileEventsFragmentVM(this,_type);
     }

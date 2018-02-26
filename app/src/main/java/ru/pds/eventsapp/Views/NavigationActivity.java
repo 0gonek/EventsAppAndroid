@@ -1,15 +1,24 @@
 package ru.pds.eventsapp.Views;
 
+import android.content.Intent;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.transition.ChangeBounds;
+import android.transition.Explode;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionSet;
+import android.view.Gravity;
 import android.view.MenuItem;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import ru.pds.eventsapp.CustomViews.EnterSharedElementCallback;
+import ru.pds.eventsapp.CustomViews.TextSizeTransition;
 import ru.pds.eventsapp.Helpers.BottomNavigationViewHelper;
 import ru.pds.eventsapp.Helpers.RxBus;
 import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
@@ -28,6 +37,8 @@ import java.util.Objects;
 import ru.pds.eventsapp.ViewModels.ProfileEventsFragmentVM;
 import ru.pds.eventsapp.databinding.ActivityNavigationBinding;
 import ru.pds.eventsapp.databinding.FragmentProfileEventsBinding;
+
+import static android.view.Gravity.LEFT;
 
 public class NavigationActivity extends BindingActivity<ActivityNavigationBinding, NavigationActivityVM> {
 
@@ -96,9 +107,9 @@ public class NavigationActivity extends BindingActivity<ActivityNavigationBindin
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if(currentFragment.getTag().equals("profile")&&AuthenticatorSingleton.getInstance().currentUser != null)
+                                if (currentFragment.getTag().equals("profile") && AuthenticatorSingleton.getInstance().currentUser != null)
                                     changeFragment(FragmentsStore.getInstance().getAuthorizedFragment(), "profile_auth");
-                                if(currentFragment.getTag().equals("profile_auth")&&AuthenticatorSingleton.getInstance().currentUser == null)
+                                if (currentFragment.getTag().equals("profile_auth") && AuthenticatorSingleton.getInstance().currentUser == null)
                                     changeFragment(FragmentsStore.getInstance().getProfileFragment(), "profile");
                             }
                         });
@@ -111,6 +122,43 @@ public class NavigationActivity extends BindingActivity<ActivityNavigationBindin
                     }
                 }
         );
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+
+            Slide slide = new Slide(Gravity.LEFT);
+            slide.setDuration(200);
+
+            getWindow().setAllowEnterTransitionOverlap(false);
+            getWindow().setAllowReturnTransitionOverlap(false);
+
+            slide.excludeChildren(getBinding().bottomNavigation,true);
+            slide.excludeTarget(getBinding().bottomNavigation,true);
+            slide.excludeTarget(android.R.id.statusBarBackground,true);
+
+            getWindow().setExitTransition(slide);
+            getWindow().setReturnTransition(slide);
+
+
+            TransitionSet solyanka = new TransitionSet();
+            solyanka.setOrdering(TransitionSet.ORDERING_TOGETHER);
+
+            Transition resize = new TextSizeTransition();
+            resize.addTarget(R.id.event_name);
+            resize.addTarget(R.id.event_desc);
+
+            solyanka.addTransition(resize);
+
+            Transition changeBounds = new ChangeBounds();
+            changeBounds.addTarget(R.id.event_name);
+            changeBounds.addTarget(R.id.event_desc);
+
+            solyanka.addTransition(changeBounds);
+
+            getWindow().setSharedElementEnterTransition(solyanka);
+            setEnterSharedElementCallback(new EnterSharedElementCallback(this));
+
+
+        }
 
         return new NavigationActivityVM(this);
 

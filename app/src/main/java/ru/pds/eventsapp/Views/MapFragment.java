@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LongSparseArray;
 import android.view.View;
+import android.view.WindowManager;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
@@ -105,6 +106,7 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
 
     @Override
     protected MapFragmentVM onCreateViewModel(FragmentMapBinding binding) {
+
         FragmentManager fm = getFragmentManager();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);//getActivity().getSupportFragmentManager().findFragmentById(R.id.map);
@@ -119,12 +121,20 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
             }
         };
 
+
         return fragmentVM;
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        getBinding().searchEditText.clearFocus();
     }
 
     @Override

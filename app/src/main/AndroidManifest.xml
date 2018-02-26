@@ -56,6 +56,16 @@
                 android:value="ru.pds.eventsapp.Views.NavigationActivity" />
 
         </activity>
+
+        <activity android:name=".Views.EventActivity"
+            android:parentActivityName=".Views.NavigationActivity">
+        <!-- Parent activity meta-data to support 4.0 and lower -->
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".Views.NavigationActivity" />
+
+        </activity>
+
     </application>
 
 </manifest>

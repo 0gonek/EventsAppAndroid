@@ -11,6 +11,14 @@
 
     <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:background="@color/colorBackground"
+            android:layout_alignParentBottom="true">
+
+        </FrameLayout>
+
         <ru.pds.eventsapp.CustomViews.ExtendedBottomNavigationView
             android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
@@ -19,7 +27,8 @@
             app:itemBackground="@color/colorBackground"
             app:itemIconTint="@drawable/bottom_menu_selector"
             app:itemTextColor="@drawable/bottom_menu_selector"
-            app:menu="@menu/bottom_navigation_menu" />
+            app:menu="@menu/bottom_navigation_menu"
+            android:layout_alignParentStart="true" />
 
         <FrameLayout
             android:layout_width="match_parent"

@@ -16,7 +16,8 @@
         android:layout_height="72dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="16dp">
+        android:clickable="true"
+        android:background="?selectableItemBackground">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -39,11 +40,12 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     android:layout_toLeftOf="@+id/date_badge"
                     android:layout_marginRight="4dp"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:transitionName="eventName"
+                    android:textAlignment="viewStart" />
 
                 <RelativeLayout
                     android:layout_height="wrap_content"
-                    android:background="@drawable/profile_event_datetime_bg"
                     android:layout_alignParentRight="true"
                     android:layout_width="wrap_content"
                     android:id="@+id/date_badge"
@@ -60,7 +62,8 @@
                         android:layout_marginTop="2dp"
                         android:layout_marginBottom="2dp"
                         android:layout_width="15sp"
-                        android:layout_height="15sp" />
+                        android:layout_height="15sp"
+                        android:visibility="gone" />
 
                     <TextView
                         android:text="@{viewModel.date}"
@@ -83,6 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/eventDesc"
+                android:transitionName="eventDesc"
                 android:textSize="16sp"
                 android:maxLines="1" />
 

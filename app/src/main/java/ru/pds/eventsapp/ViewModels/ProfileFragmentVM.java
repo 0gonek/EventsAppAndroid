@@ -32,7 +32,7 @@ public class ProfileFragmentVM extends FragmentViewModel<ProfileFragment> {
     public FacebookClient facebookClient;
 
     private void onLogin(final String integrationType, Single<LoginModel> event, final String id, final String token) {
-        event.subscribe(new Consumer<LoginModel>() {
+        /*event.subscribe(new Consumer<LoginModel>() {
                             @Override
                             public void accept(@NonNull LoginModel loginModel) throws Exception {
                                 Toast.makeText(getFragment().getContext(), "Success", Toast.LENGTH_SHORT).show();
@@ -52,8 +52,8 @@ public class ProfileFragmentVM extends FragmentViewModel<ProfileFragment> {
 
                         error.show();
                     }
-                });
-        //AuthenticatorSingleton.getInstance().saveLogin(getFragment().getContext(), "123", "123", "VK", new LoginModel());
+                });*/
+        AuthenticatorSingleton.getInstance().saveLogin(getFragment().getContext(), "123", "123", "VK", new LoginModel());
 
     }
 

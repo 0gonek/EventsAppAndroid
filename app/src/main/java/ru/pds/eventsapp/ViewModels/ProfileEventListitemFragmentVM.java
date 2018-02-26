@@ -12,16 +12,19 @@ public class ProfileEventListitemFragmentVM {
 
     public PojoSmallEvent event;
 
-    public String getName(){
+    public String getName() {
         return event.name;
     }
-    public String getDesc(){
+
+    public String getDesc() {
         return event.description;
     }
 
-    public String getDate(){
+    public String getDate() {
+        if (event.date == null)
+            event.date = 0L;
         Date date = new Date(event.date);
-        return new SimpleDateFormat("dd MMM., yyyy г., HH:MM").format(date);
+        return new SimpleDateFormat("dd MMM, yyyy г., HH:MM").format(date);
     }
 
     public ProfileEventListitemFragmentVM(PojoSmallEvent event) {

@@ -11,3 +11,4 @@ public class LoginModel {
     public String avatar;
 
 }
+
