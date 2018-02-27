@@ -321,11 +321,11 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
 
             init.name = getIntent().getStringExtra("eventName");
             init.groupId = 0L;
-            init.groupName = getIntent().getStringExtra("eventGroup");
+            init.description = getIntent().getStringExtra("eventDesc");
             init.isAccepted = getIntent().getBooleanExtra("eventAccepted", false);
             init.id = getIntent().getLongExtra("eventId", 0);
 
-            viewModel.putInitialData(init);
+            viewModel.putData(init);
             viewModel.fetchEvent();
 
         }

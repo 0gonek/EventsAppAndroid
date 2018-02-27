@@ -1,7 +1,9 @@
 package ru.pds.eventsapp.ViewModels;
 
+import android.databinding.Bindable;
 import android.databinding.ObservableField;
 import android.graphics.Bitmap;
+import android.widget.Toast;
 
 import com.stfalcon.androidmvvmhelper.mvvm.activities.ActivityViewModel;
 
@@ -27,12 +29,12 @@ public class EventActivityVM extends ActivityViewModel<EventActivity> {
         WalkerApi.getInstance().getEvent(event.get().id).subscribe(new Consumer<PojoEvent>() {
             @Override
             public void accept(@NonNull PojoEvent pojoEvent) throws Exception {
-                event.set(pojoEvent);
+                putData(pojoEvent);
+
             }
         }, new Consumer<Throwable>() {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
-
             }
         });
     }
@@ -54,26 +56,34 @@ public class EventActivityVM extends ActivityViewModel<EventActivity> {
         });
     }
 
-    public String getWhen(){
-            if (event.get().date == null)
-                event.get().date = 0L;
-            Date date = new Date(event.get().date);
-            return new SimpleDateFormat("dd MMM, yyyy г., HH:MM").format(date);
-    }
-    public String getUntil(){
-        if (event.get().date == null)
-            event.get().date = 0L;
-        Date date = new Date(event.get().date + event.get().duration);
-        return new SimpleDateFormat("dd MMM, yyyy г., HH:MM").format(date);
-    }
-
-    public void putInitialData(PojoEvent init){
-        event.set(init);
-    }
 
     public ObservableField<PojoEvent> event = new ObservableField<>();
+    public ObservableField<String> description = new ObservableField<>();
+    public ObservableField<String> name = new ObservableField<>();
+    public ObservableField<String> groupName = new ObservableField<>();
+    public ObservableField<String> when = new ObservableField<>();
+    public ObservableField<String> until = new ObservableField<>();
 
 
+
+    public void putData(PojoEvent dataEvent){
+        event.set(dataEvent);
+
+        description.set(dataEvent.description==null?"Нет описания":dataEvent.description);
+        name.set(dataEvent.name);
+        groupName.set(dataEvent.groupName==null?"Без группы":dataEvent.groupName);
+
+        if (event.get().date == null)
+            event.get().date = 0L;
+        Date date = new Date(event.get().date);
+        when.set( new SimpleDateFormat("dd MMM, yyyy г., HH:MM").format(date) );
+
+        if (event.get().duration == null)
+            event.get().duration = 0L;
+        date = new Date(event.get().date + event.get().duration);
+        until.set( new SimpleDateFormat("dd MMM, yyyy г., HH:MM").format(date) );
+
+    }
 
     public EventActivityVM(EventActivity activity) {
         super(activity);
