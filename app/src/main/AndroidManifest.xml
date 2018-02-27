@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.pds.eventsapp">
 
     <!--
@@ -7,13 +8,21 @@
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality. 
     -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-feature android:name="android.hardware.location.network" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false"  />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        tools:replace="android:theme"
         android:theme="@style/AppTheme">
 
         <!--
@@ -46,16 +55,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="ru.pds.eventsapp.Views.NavigationActivity" />
         </activity>
-        <activity android:name=".Views.BrowserActivity"
-
-            android:label="Browser"
-            android:parentActivityName="ru.pds.eventsapp.Views.NavigationActivity" >
-            <!-- Parent activity meta-data to support 4.0 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ru.pds.eventsapp.Views.NavigationActivity" />
-
-        </activity>
 
         <activity android:name=".Views.EventActivity"
             android:parentActivityName=".Views.NavigationActivity">
@@ -65,7 +64,11 @@
             android:value=".Views.NavigationActivity" />
 
         </activity>
-
+        <activity
+            tools:replace="android:label"
+            android:name="com.alium.nibo.origindestinationpicker.NiboOriginDestinationPickerActivity"
+            android:label="Выбор места"
+            android:theme="@style/NiboOrigDestTheme.NoActionBar" />
     </application>
 
 </manifest>

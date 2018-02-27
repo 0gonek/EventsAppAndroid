@@ -70,7 +70,7 @@
                         android:paddingBottom="16dp">
 
                         <TextView
-                            android:text="Колян и пацаны хотят забухать у падиков"
+                            android:text="@{viewModel.event.get().name}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:id="@+id/event_name"
@@ -83,7 +83,7 @@
                             android:textAlignment="viewStart" />
 
                         <TextView
-                            android:text="Group name so fucking long"
+                            android:text="@{viewModel.event.get().description}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/event_name"
@@ -103,7 +103,7 @@
                             android:textColor="#444" />
 
                         <TextView
-                            android:text="25 дек., 2017 г., 15:37"
+                            android:text="@{viewModel.when}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_alignTop="@+id/textView6"
@@ -124,7 +124,7 @@
                             android:textColor="#444" />
 
                         <TextView
-                            android:text="12 янв., 2018 г., 17:48"
+                            android:text="@{viewModel.until}"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/date_until"
@@ -134,7 +134,7 @@
                             android:textColor="#444" />
 
                         <TextView
-                            android:text="gddbggdghdhdhgh dhtdtdhtdhtdhtdhtdhdtdthhd"
+                            android:text="@{viewModel.event.get().description}"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/textView11"
@@ -214,13 +214,23 @@
 
         </RelativeLayout>
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#22000000"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+            android:clickable="true" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="192dp"
             android:id="@+id/editLayout"
             android:background="#FAFAFA"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <ScrollView
                 android:layout_width="match_parent"
@@ -261,12 +271,24 @@
                             android:id="@+id/group_name_edit"
                             android:layout_marginTop="6dp" />
 
+
+
+                        <CheckBox
+                            android:text="Только для этой группы"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/group_name_edit"
+                            android:layout_alignStart="@+id/group_name_edit"
+                            android:layout_marginTop="24dp"
+                            android:id="@+id/privacyCheckbox" />
+
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_alignStart="@+id/group_name_edit"
-                            android:layout_below="@+id/group_name_edit"
-                            android:layout_marginTop="24dp"
+                            android:layout_alignStart="@+id/privacyCheckbox"
+                            android:layout_below="@+id/privacyCheckbox"
+                            android:layout_marginTop="16dp"
+                            app:errorEnabled="true"
                             android:id="@+id/whenEditConatiner">
 
                             <EditText
@@ -283,9 +305,9 @@
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
                             android:layout_alignStart="@+id/whenEditConatiner"
                             android:id="@+id/untilEditContainer"
+                            app:errorEnabled="true"
                             android:layout_below="@+id/whenEditConatiner"
                             android:layout_alignParentStart="true">
 
@@ -304,23 +326,13 @@
                             android:layout_height="wrap_content"
                             android:inputType="date"
                             android:ems="10"
-                            android:layout_marginStart="6dp"
-                            android:id="@+id/whenTime"
-                            android:layout_toEndOf="@+id/whenEditConatiner"
-                            android:layout_alignBottom="@+id/whenEditConatiner"
-                            android:layout_width="80dp"
-                            android:focusable="false" />
-
-                        <EditText
-                            android:layout_height="wrap_content"
-                            android:inputType="date"
-                            android:ems="10"
                             android:id="@+id/untilTime"
-                            android:layout_alignBottom="@+id/untilEditContainer"
+                            android:layout_alignTop="@+id/untilEditContainer"
                             android:layout_toEndOf="@+id/untilEditContainer"
                             android:layout_marginLeft="6dp"
                             android:layout_width="80dp"
-                            android:focusable="false" />
+                            android:focusable="false"
+                            android:layout_marginTop="11dp" />
 
                         <android.support.design.widget.TextInputLayout
                             android:layout_width="wrap_content"
@@ -328,15 +340,16 @@
                             android:layout_marginTop="8dp"
                             android:layout_alignStart="@+id/untilEditContainer"
                             android:id="@+id/placeEditContainer"
+                            app:errorEnabled="true"
                             android:layout_below="@+id/untilEditContainer"
                             android:layout_alignParentStart="true">
 
                             <EditText
                                 android:id="@+id/placeEdit"
-                                android:layout_width="150dp"
                                 android:layout_height="wrap_content"
                                 android:hint="Место"
-                                android:focusable="false" />
+                                android:focusable="false"
+                                android:layout_width="236dp" />
 
                         </android.support.design.widget.TextInputLayout>
 
@@ -350,10 +363,23 @@
                             android:layout_marginTop="24dp"
                             android:layout_marginRight="16dp"
                             android:textColor="#444"
+                            app:errorEnabled="true"
                             android:fontFamily="sans-serif"
                             android:lineSpacingExtra="8sp"
                             android:id="@+id/descEdit"
                             android:hint="Описание"/>
+
+                        <EditText
+                            android:layout_height="wrap_content"
+                            android:inputType="date"
+                            android:ems="10"
+                            android:id="@+id/whenTime"
+                            android:layout_width="80dp"
+                            android:focusable="false"
+                            android:layout_toRightOf="@+id/whenEditConatiner"
+                            android:layout_alignTop="@+id/whenEditConatiner"
+                            android:layout_marginLeft="6dp"
+                            android:layout_marginTop="11dp" />
 
                     </RelativeLayout>
 
@@ -396,16 +422,6 @@
             </ScrollView>
 
         </RelativeLayout>
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#22000000"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
-            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
-            android:clickable="true" />
 
     </android.support.design.widget.CoordinatorLayout>
 

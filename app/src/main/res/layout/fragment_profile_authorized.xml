@@ -17,18 +17,20 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/coordinator">
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
             android:layout_height="192dp"
-            android:layout_width="match_parent">
+            android:layout_width="match_parent"
+            app:layout_behavior="ru.pds.eventsapp.Helpers.FlingBehavior">
 
             <android.support.design.widget.CollapsingToolbarLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:toolbarId="@+id/toolbar"
-                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed|snap"
+                app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
 
                 app:contentScrim="#FAFAFA"
                 android:scrollbarDefaultDelayBeforeFade="-1">
@@ -106,12 +108,12 @@
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
-            android:id="@+id/scroll_view">
+            android:id="@+id/scroll_view"
+            app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
                 <com.gigamole.navigationtabstrip.NavigationTabStrip
                     android:id="@+id/nts_top"
@@ -129,7 +131,7 @@
                 <android.support.v4.view.ViewPager
                     android:id="@+id/vp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:elevation="3dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentStart="true"
@@ -137,6 +139,24 @@
 
             </RelativeLayout>
         </android.support.v4.widget.NestedScrollView>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/addEventConatiner"
+            app:layout_anchor="@id/scroll_view"
+            app:layout_anchorGravity="bottom|right">
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:fabSize="normal"
+                app:srcCompat="@drawable/ic_add_white_24dp"
+                android:id="@+id/addEventFab"
+                android:layout_margin="16dp" />
+        </FrameLayout>
+
     </android.support.design.widget.CoordinatorLayout>
 
 </layout>

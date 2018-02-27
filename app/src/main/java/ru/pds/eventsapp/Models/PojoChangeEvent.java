@@ -11,4 +11,6 @@ public class PojoChangeEvent {
     public Long duration;
     public String description;
     public byte[] picture;
+    public Boolean privacy;
+
 }

@@ -8,10 +8,9 @@ public class PojoNewEvent {
     public Double longitude;
     public Long date;
     public Long duration;
-    public boolean privacy;
+    public Boolean privacy;
     public String description;
     public byte[] picture;
     public Integer type;
-    public Long participants;
     public Long groupId;
 }

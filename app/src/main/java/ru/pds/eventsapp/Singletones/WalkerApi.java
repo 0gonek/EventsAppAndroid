@@ -30,7 +30,7 @@ import ru.pds.eventsapp.Services.ApiService;
 
 public class WalkerApi {
 
-    private static final String API_URL = "http://52.138.197.249:8080/";
+    private static final String API_URL = "http://walkerapp.ru:8080/";
     private static WalkerApi ourInstance = new WalkerApi();
 
     public static WalkerApi getInstance() {
@@ -60,27 +60,27 @@ public class WalkerApi {
         ApiService apiService = getApiService();
         Single<PojoSmallEvents> call = apiService.profileEvents(type, AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken);
 
-        call = new Single<PojoSmallEvents>(){
+            /*call = new Single<PojoSmallEvents>(){
 
-            @Override
-            protected void subscribeActual(@NonNull SingleObserver<? super PojoSmallEvents> observer) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                @Override
+                protected void subscribeActual(@NonNull SingleObserver<? super PojoSmallEvents> observer) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    PojoSmallEvents events = new PojoSmallEvents();
+                    events.pojoEvents = new PojoSmallEvent[10];
+                    for (int i = 0; i < 10; i++) {
+                        events.pojoEvents[i] = new PojoSmallEvent();
+                        events.pojoEvents[i].id=(long)i;
+                        events.pojoEvents[i].name="My dick is "+i+" cm";
+                        events.pojoEvents[i].description = "Really nigger I'm not lying.(Actually "+(i*10)+" cm)";
+                    }
+                    observer.onSuccess(events);
                 }
-                PojoSmallEvents events = new PojoSmallEvents();
-                events.pojoEvents = new PojoSmallEvent[10];
-                for (int i = 0; i < 10; i++) {
-                    events.pojoEvents[i] = new PojoSmallEvent();
-                    events.pojoEvents[i].id=(long)i;
-                    events.pojoEvents[i].name="My dick is "+i+" cm";
-                    events.pojoEvents[i].description = "Really nigger I'm not lying.(Actually "+(i*10)+" cm)";
-                }
-                observer.onSuccess(events);
-            }
-        };
-
+            };
+    */
 
         return call.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -128,7 +128,7 @@ public class WalkerApi {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public Single<Boolean> newEvents(PojoNewEvent newEvent){
+    public Single<Long> newEvents(PojoNewEvent newEvent){
 
         if(AuthenticatorSingleton.getInstance().currentUser==null)
             return null;

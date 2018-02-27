@@ -8,10 +8,12 @@ public class    PojoEvent {
     public Double longitude;
     public Long date;
     public Long duration;
-    public boolean privacy;
+    public Boolean privacy;
     public String description;
     public String pathToThePicture;
     public Integer type;
     public Long participants;
     public Long groupId;
+    public String groupName;
+    public Boolean isAccepted;
 }

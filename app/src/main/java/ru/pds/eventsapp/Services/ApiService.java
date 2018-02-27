@@ -35,7 +35,7 @@ public interface ApiService {
             @Query("id") long userID,
             @Query("token") String token );
 
-    @GET("/events/get_between")
+    @GET("/events/get_between_public")
     Single<PojoEventsForMap> mapEventsPublic(
             @Query("min_lat") double minLat,
             @Query("max_lat") double maxLat,
@@ -48,13 +48,13 @@ public interface ApiService {
             @Query("event_id") long eventId,
             @Query("token") String token);
 
-    @POST("/events/change_event")
+    @POST("/events/change")
     Single<Boolean> changeEvent(
             @Body PojoChangeEvent changeModel
     );
 
     @POST("/events/new")
-    Single<Boolean> newEvent(
+    Single<Long> newEvent(
             @Body PojoNewEvent newModel
     );
 }

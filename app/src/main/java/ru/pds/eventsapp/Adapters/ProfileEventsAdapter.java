@@ -82,6 +82,8 @@ public class ProfileEventsAdapter extends RecyclerView.Adapter<ProfileEventsAdap
 
                     b.putString("eventName",event.name);
                     b.putString("eventDesc",event.description);
+                    b.putLong("eventId",event.id);
+                    b.putBoolean("eventAccepted",true);
 
                     eventIntent.putExtras(b);
                     getActivity().startActivity(eventIntent, optionsCompat.toBundle());

@@ -1,5 +1,9 @@
 package ru.pds.eventsapp.Views;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.ViewDataBinding;
 import android.graphics.Bitmap;
@@ -12,13 +16,16 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
@@ -125,21 +132,72 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
             }
 
         });
+        getBinding().vp.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            private int pos = 0;
 
-        getBinding().ntsTop.setViewPager(getBinding().vp, 2);
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if(position==0)
+                    getBinding().addEventConatiner.setX(getBinding().vp.getWidth() - positionOffsetPixels - getBinding().addEventConatiner.getWidth());
+            }
 
-        /*getBinding().appBarImage.post(new Runnable() {
+            @Override
+            public void onPageSelected(int position) {
+                pos = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if(state==0)
+                    if(pos==0)
+                        getBinding().addEventConatiner.setX(getBinding().vp.getWidth() - getBinding().addEventConatiner.getWidth());
+                    else
+                        getBinding().addEventConatiner.setX(getBinding().vp.getWidth());
+            }
+        });
+
+        getBinding().ntsTop.setViewPager(getBinding().vp, 1);
+        getBinding().addEventConatiner.post(new Runnable() {
             @Override
             public void run() {
-                Blurry.with(getContext())
-                        .radius(10)
-                        .sampling(8)
-                        .color(Color.argb(20, 0, 0, 0))
-                        .async()
-                        .capture(getBinding().appBarImage)
-                        .into(getBinding().appBarImage);
+                getBinding().addEventConatiner.setX(getBinding().vp.getWidth());
             }
-        });*/
+        });
+
+        getBinding().addEventFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder popup = new AlertDialog.Builder(getActivity());
+                final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.new_event_dialog, null);
+
+                popup.setTitle("Новое мероприятие")
+                        .setView(dialogView)
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setPositiveButton("СОЗДАТЬ", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent act = new Intent(getActivity(), EventActivity.class);
+                                if(((EditText)dialogView.findViewById(R.id.name)).getText()==null||((EditText)dialogView.findViewById(R.id.name)).getText().length()<4){
+                                    Toast.makeText(getContext(),"Длина имени должна быть не менее 4 символов",Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                Bundle extras = new Bundle();
+                                extras.putString("newEventName",((EditText)dialogView.findViewById(R.id.name)).getText().toString());
+                                extras.putString("newGroupName",((EditText)dialogView.findViewById(R.id.group)).getText().toString());
+                                extras.putBoolean("eventAccepted",true);
+                                act.putExtras(extras);
+                                startActivity(act);
+                            }
+                        });
+                popup.create().show();
+            }
+        });
+
 
         getViewModel().avatarListener = new Runnable() {
             @Override
