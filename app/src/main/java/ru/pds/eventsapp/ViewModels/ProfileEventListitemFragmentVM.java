@@ -17,7 +17,7 @@ public class ProfileEventListitemFragmentVM {
     }
 
     public String getDesc() {
-        return event.description;
+        return event.description==null||event.description.length()==0?"Описание отсутсвует":event.description;
     }
 
     public String getDate() {

@@ -15,5 +15,5 @@ public class    PojoEvent {
     public Long participants;
     public Long groupId;
     public String groupName;
-    public Boolean isAccepted;
+    public Boolean accepted;
 }

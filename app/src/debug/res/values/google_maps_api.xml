@@ -9,11 +9,17 @@
     You can also add your credentials to an existing key, using this line:
     FD:41:C6:30:97:B1:A0:2A:4E:7A:58:17:47:70:86:23:46:CE:31:B6;ru.pds.eventsapp
 
+
     Alternatively, follow the directions here:
     https://developers.google.com/maps/documentation/android/start#get-key
 
     Once you have your key (it starts with "AIza"), replace the "google_maps_key"
     string in this file.
+
+
+    RELEASE
+    05:A6:DF:B2:F9:A0:71:D2:55:DD:37:10:2E:E0:01:9A:BA:0D:6A:F7;ru.pds.eventsapp
+
     -->
 
 

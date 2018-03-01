@@ -166,7 +166,7 @@
                             android:paddingRight="16dp">
 
                             <TextView
-                                android:text="26 участников"
+                                android:text="@{viewModel.participants}"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:id="@+id/participants_text"
@@ -203,7 +203,7 @@
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:id="@+id/imageView3"
+                                android:id="@+id/imageView100"
                                 android:layout_centerVertical="true"
                                 android:background="@drawable/ic_map_gray_24dp" />
                         </RelativeLayout>
@@ -408,7 +408,7 @@
                                 android:textSize="14sp"
                                 android:layout_marginLeft="46dp"
                                 android:layout_centerVertical="true"
-                                android:textColor="#FF595E" />
+                                android:textColor="@color/colorRed" />
 
                             <ImageView
                                 android:layout_width="wrap_content"

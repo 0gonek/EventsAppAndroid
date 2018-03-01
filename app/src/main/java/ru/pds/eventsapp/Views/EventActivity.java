@@ -2,31 +2,22 @@ package ru.pds.eventsapp.Views;
 
 import android.Manifest;
 import android.animation.Animator;
-import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.NavUtils;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.Toolbar;
 import android.transition.ChangeBounds;
-import android.transition.Explode;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionSet;
-import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
@@ -34,6 +25,9 @@ import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 import ru.pds.eventsapp.CustomViews.EnterSharedElementCallback;
 import ru.pds.eventsapp.CustomViews.TextSizeTransition;
 import ru.pds.eventsapp.Models.PojoEvent;
@@ -44,16 +38,15 @@ import ru.pds.eventsapp.BR;
 import com.alium.nibo.models.NiboSelectedPlace;
 import com.alium.nibo.placepicker.NiboPlacePickerActivity;
 import com.alium.nibo.utils.NiboConstants;
-import com.alium.nibo.utils.NiboStyle;
+import com.google.gson.GsonBuilder;
 import com.stfalcon.androidmvvmhelper.mvvm.activities.BindingActivity;
 
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
+import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
 import ru.pds.eventsapp.ViewModels.EventActivityVM;
 import ru.pds.eventsapp.databinding.ActivityEventBinding;
 
@@ -62,15 +55,19 @@ import ru.pds.eventsapp.databinding.ActivityEventBinding;
  * Created by Alexey on 21.02.2018.
  */
 
-public class EventActivity extends BindingActivity<ActivityEventBinding, EventActivityVM> {
+public class EventActivity extends BindingActivity<ActivityEventBinding, EventActivityVM> implements View.OnClickListener {
 
+    Context _ctx;
+    boolean editMode = false;
+    boolean createMode = false;
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void eventCreated(Long id) {
-        Toast.makeText(this, "Success "+id, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Success " + id, Toast.LENGTH_SHORT).show();
 
         rippleEditOff();
+        getViewModel().event.set(new PojoEvent());
         getViewModel().event.get().id = id;
+
         getViewModel().fetchEvent();
     }
 
@@ -157,7 +154,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
-                if(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)){
+                if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     Intent intent = new Intent(view.getContext(), NiboPlacePickerActivity.class);
                     NiboPlacePickerActivity.NiboPlacePickerBuilder config = new NiboPlacePickerActivity.NiboPlacePickerBuilder()
                             .setSearchBarTitle("Выбор места")
@@ -165,21 +162,21 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
 
                     NiboPlacePickerActivity.setBuilder(config);
                     startActivityForResult(intent, 1);
-                }else{
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},1337);
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1337);
                 }
 
 
             }
         });
     }
-    Context _ctx;
+
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
-        if(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            ||hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)){
+        if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             Intent intent = new Intent(_ctx, NiboPlacePickerActivity.class);
             NiboPlacePickerActivity.NiboPlacePickerBuilder config = new NiboPlacePickerActivity.NiboPlacePickerBuilder()
                     .setSearchBarTitle("Выбор места")
@@ -193,24 +190,23 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean hasPermission(String perm) {
-        return(PackageManager.PERMISSION_GRANTED==checkSelfPermission(perm));
+        return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 NiboSelectedPlace selectedPlace = data.getParcelableExtra(NiboConstants.SELECTED_PLACE_RESULT);
 
                 double latitude = selectedPlace.getLatLng().latitude;
                 double longitude = selectedPlace.getLatLng().longitude;
-                getBinding().placeEdit.setText(latitude+", "+longitude);
+                getBinding().placeEdit.setText(latitude + ", " + longitude);
             }
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     void rippleEditOn() {
 
         getBinding().fab.setImageResource(R.drawable.ic_check_white_24dp);
@@ -228,12 +224,9 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         anim.start();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     void rippleEditOff() {
 
-        getBinding().fab.setImageResource(R.drawable.ic_mode_edit_white_24dp);
-        getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorBackground, null)));
-
+        configureFab();
 
         int x = (int) getBinding().fab.getX();
         int y = (int) getBinding().fab.getY();
@@ -267,20 +260,39 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         anim.start();
     }
 
-    boolean editMode = false;
-    boolean createMode = false;
+    void configureFab() {
+
+        if (canEdit()) {
+            getBinding().fab.setImageResource(R.drawable.ic_mode_edit_white_24dp);
+            getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorBackground, null)));
+        } else {
+            if (getViewModel().event.get().accepted ==null||!getViewModel().event.get().accepted) {
+                getBinding().fab.setImageResource(R.drawable.ic_check_white_24dp);
+                getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorCreate, null)));
+            } else {
+                getBinding().fab.setImageResource(R.drawable.ic_dialog_close_dark);
+                getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorRed, null)));
+            }
+        }
+
+    }
 
 
     public String getMonth(int month) {
         return new DateFormatSymbols().getShortMonths()[month];
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public EventActivityVM onCreate() {
         _ctx = this;
 
         EventActivityVM viewModel = new EventActivityVM(this);
+        viewModel.configureFab.observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Object>() {
+            @Override
+            public void accept(@NonNull Object o) throws Exception {
+                configureFab();
+            }
+        });
 
         getBinding().toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -315,50 +327,24 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
                     });
 
         } else {
-
-
             PojoEvent init = new PojoEvent();
 
-            init.name = getIntent().getStringExtra("eventName");
-            init.groupId = 0L;
-            init.description = getIntent().getStringExtra("eventDesc");
-            init.isAccepted = getIntent().getBooleanExtra("eventAccepted", false);
-            init.id = getIntent().getLongExtra("eventId", 0);
-
+            if (getIntent().getStringExtra("eventInfo") != null && getIntent().getStringExtra("eventInfo").length() != 0) {
+                init = new GsonBuilder().create().fromJson(getIntent().getStringExtra("eventInfo"), PojoEvent.class);
+            } else {
+                init.name = getIntent().getStringExtra("eventName");
+                init.groupId = 0L;
+                init.description = getIntent().getStringExtra("eventDesc");
+                init.accepted = getIntent().getBooleanExtra("eventAccepted", false);
+                init.id = getIntent().getLongExtra("eventId", 0);
+                viewModel.fetchEvent();
+            }
             viewModel.putData(init);
-            viewModel.fetchEvent();
-
         }
 
         configurePickers();
 
-
-        getBinding().fab.setOnClickListener(new View.OnClickListener() {
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View view) {
-                editMode = !editMode;
-
-
-                if (createMode) {
-
-                    PojoNewEvent newEvent = collectCreateFields();
-
-                    if (newEvent != null) {
-                        createMode = false;
-                        getViewModel().createEvent(newEvent);
-                        return;
-                    }
-                    return;
-                }
-                if (editMode)
-                    rippleEditOn();
-                else
-                    rippleEditOff();
-
-            }
-        });
-
+        getBinding().fab.setOnClickListener(this);
 
         createTransition();
 
@@ -372,11 +358,13 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             return null;
         }
     }
-    void clearErrors(){
+
+    void clearErrors() {
         getBinding().whenEditConatiner.setError(null);
         getBinding().untilEditContainer.setError(null);
         getBinding().placeEditContainer.setError(null);
     }
+
     PojoNewEvent collectCreateFields() {
 
         clearErrors();
@@ -384,8 +372,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         PojoNewEvent newEvent = new PojoNewEvent();
         newEvent.name = getBinding().eventNameEdit.getText().toString();
         newEvent.date = parseDate(getBinding().whenEdit.getText() + " " + getBinding().whenTime.getText());
-        newEvent.groupId=null;
-
+        newEvent.groupId = null;
 
 
         if (newEvent.date == null) {
@@ -399,7 +386,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             getBinding().untilEditContainer.setError("Обязательное поле");
             return null;
         }
-        newEvent.duration -=  newEvent.date;
+        newEvent.duration -= newEvent.date;
         if (newEvent.date < Calendar.getInstance().getTime().getTime()) {
             getBinding().whenEditConatiner.setError("Событие должно быть не ранее текущего времени");
             return null;
@@ -415,7 +402,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         try {
             newEvent.latitude = Double.parseDouble(getBinding().placeEdit.getText().toString().split(", ")[0]);
             newEvent.longitude = Double.parseDouble(getBinding().placeEdit.getText().toString().split(", ")[1]);
-        }catch (Exception e){
+        } catch (Exception e) {
             getBinding().placeEditContainer.setError("Обязательное поле");
             return null;
         }
@@ -435,7 +422,6 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
     public int getLayoutId() {
         return R.layout.activity_event;
     }
-
 
     private void createTransition() {
 
@@ -478,4 +464,39 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
     }
 
 
+    private boolean canEdit() {
+
+        if (getViewModel().event.get() != null && getViewModel().event.get().ownerId != null)
+            return getViewModel().event.get().ownerId == AuthenticatorSingleton.getInstance().currentUser.serverID;
+        else
+            return false;
+    }
+
+    @Override
+    public void onClick(View view) {
+        editMode = !editMode;
+
+        if (createMode) {
+
+            PojoNewEvent newEvent = collectCreateFields();
+
+            if (newEvent != null) {
+                createMode = false;
+                getViewModel().createEvent(newEvent);
+                return;
+            }
+            return;
+        }
+
+        if (canEdit())
+            if (editMode)
+                rippleEditOn();
+            else
+                rippleEditOff();
+        else if (getViewModel().event.get().accepted !=null&&getViewModel().event.get().accepted)
+            getViewModel().rejectEvent();
+        else
+            getViewModel().acceptEvent();
+
+    }
 }

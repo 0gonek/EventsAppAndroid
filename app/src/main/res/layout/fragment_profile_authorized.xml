@@ -125,8 +125,7 @@
                     app:nts_corners_radius="1dp"
                     app:nts_inactive_color="#ff1a1e23"
                     app:nts_size="15sp"
-                    app:nts_weight="3dp"
-                    android:layout_below="@+id/header" />
+                    app:nts_weight="3dp"/>
 
                 <android.support.v4.view.ViewPager
                     android:id="@+id/vp"

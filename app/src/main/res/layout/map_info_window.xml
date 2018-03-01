@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content">
+
+    <ImageView
+        app:srcCompat="@drawable/com_facebook_profile_picture_blank_square"
+        android:id="@+id/eventPic"
+        android:layout_width="150dp"
+        android:scaleType="centerCrop"
+        android:layout_height="70dp" />
+
+    <TextView
+        android:text="groupName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventGroup"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp" />
+
+    <TextView
+        android:text="Название ивента"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventName"
+        android:textColor="#444"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:text="2 дек., 2017 г., 14:00"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventDate"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp" />
+
+    <TextView
+        android:text=">>"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView8"
+        android:textAlignment="textEnd"
+        android:textSize="10sp" />
+</LinearLayout>

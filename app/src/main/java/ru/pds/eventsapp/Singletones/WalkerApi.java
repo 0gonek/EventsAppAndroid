@@ -141,6 +141,20 @@ public class WalkerApi {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
-
-
+    public Single<Boolean> acceptEvent(Long eventId){
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+        return getApiService()
+                .new_participant(AuthenticatorSingleton.getInstance().currentUser.serverID,eventId,AuthenticatorSingleton.getInstance().accessToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+    public Single<Boolean> rejectEvent(Long eventId){
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+        return getApiService()
+                .new_participant(AuthenticatorSingleton.getInstance().currentUser.serverID,AuthenticatorSingleton.getInstance().currentUser.serverID,eventId,AuthenticatorSingleton.getInstance().accessToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 }

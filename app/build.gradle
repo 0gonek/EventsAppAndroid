@@ -2,22 +2,25 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "27.0.0"
     dataBinding {
         enabled = true
     }
 
     defaultConfig {
         applicationId "ru.pds.eventsapp"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
 
     }
-
+    dexOptions {
+        javaMaxHeapSize "2g"
+    }
     buildTypes {
         release {
             minifyEnabled false

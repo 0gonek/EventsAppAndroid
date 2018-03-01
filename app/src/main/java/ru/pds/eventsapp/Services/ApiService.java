@@ -57,4 +57,16 @@ public interface ApiService {
     Single<Long> newEvent(
             @Body PojoNewEvent newModel
     );
+    @GET("/events/new_participant")
+    Single<Boolean> new_participant(
+            @Query("id") Long id,
+            @Query("event_id") Long eventId,
+            @Query("token") String token );
+
+    @GET("/events/delete_participant")
+    Single<Boolean> new_participant(
+            @Query("id") Long id,
+            @Query("participant_id") Long participant_id,
+            @Query("event_id") Long eventId,
+            @Query("token") String token );
 }
