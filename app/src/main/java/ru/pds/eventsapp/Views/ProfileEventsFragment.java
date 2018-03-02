@@ -9,7 +9,9 @@ import android.view.View;
 
 import com.stfalcon.androidmvvmhelper.mvvm.fragments.BindingFragment;
 
+import ru.pds.eventsapp.Adapters.ProfileEventsAdapter;
 import ru.pds.eventsapp.BR;
+import ru.pds.eventsapp.Models.PojoSmallEvent;
 import ru.pds.eventsapp.R;
 import ru.pds.eventsapp.ViewModels.ProfileEventsFragmentVM;
 import ru.pds.eventsapp.databinding.FragmentProfileEventsBinding;
@@ -23,18 +25,28 @@ public class ProfileEventsFragment extends BindingFragment<ProfileEventsFragment
         // Required empty public constructor
     }
     int _type;
+    static ProfileEventsFragment[] fragments = new ProfileEventsFragment[3];
     public static ProfileEventsFragment newInstance(int type) {
-        ProfileEventsFragment fragment = new  ProfileEventsFragment();
-        fragment._type = type;
-        return fragment;
+        if(fragments[type]==null) {
+            fragments[type] = new ProfileEventsFragment();
+            fragments[type]._type = type;
+        }
+        return fragments[type];
     }
 
     @Override
     protected ProfileEventsFragmentVM onCreateViewModel(FragmentProfileEventsBinding binding) {
 
         getBinding().eventsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        getBinding().eventsRecycler.setAdapter(new ProfileEventsAdapter(new PojoSmallEvent[]{}));
 
         return new ProfileEventsFragmentVM(this,_type);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getViewModel().loadEvents();
     }
 
     @Override

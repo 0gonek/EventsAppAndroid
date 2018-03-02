@@ -24,7 +24,7 @@ public class ProfileEventListitemFragmentVM {
         if (event.date == null)
             event.date = 0L;
         Date date = new Date(event.date);
-        return new SimpleDateFormat("dd MMM, yyyy г., HH:MM").format(date);
+        return new SimpleDateFormat("dd MMM, yyyy г., HH:mm").format(date);
     }
 
     public ProfileEventListitemFragmentVM(PojoSmallEvent event) {

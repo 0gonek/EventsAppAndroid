@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
@@ -64,19 +65,16 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
     public static ProfileAuthorizedFragment newInstance() {
         return new ProfileAuthorizedFragment();
     }
 
-    @Override
-    protected ProfileAuthorizedFragmentVM onCreateViewModel(FragmentProfileAuthorizedBinding binding) {
-        return new ProfileAuthorizedFragmentVM(this);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+    void configureScreenAndMenu() {
         getBinding().scrollView.setFillViewport(true);
         getBinding().scrollView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,9 +116,10 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
                 popup.show();
             }
         });
+    }
 
-
-        getBinding().vp.setAdapter(new FragmentPagerAdapter(getFragmentManager()) {
+    void configureViewPager() {
+        getBinding().vp.setAdapter(new FragmentPagerAdapter(getChildFragmentManager()) {
             @Override
             public int getCount() {
                 return 3;
@@ -137,7 +136,7 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if(position==0)
+                if (position == 0)
                     getBinding().addEventConatiner.setX(getBinding().vp.getWidth() - positionOffsetPixels - getBinding().addEventConatiner.getWidth());
             }
 
@@ -148,22 +147,30 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                if(state==0)
-                    if(pos==0)
+                if (state == 0)
+                    if (pos == 0)
                         getBinding().addEventConatiner.setX(getBinding().vp.getWidth() - getBinding().addEventConatiner.getWidth());
                     else
                         getBinding().addEventConatiner.setX(getBinding().vp.getWidth());
             }
         });
 
+    }
+
+    void configureTab() {
         getBinding().ntsTop.setViewPager(getBinding().vp, 1);
         getBinding().addEventConatiner.post(new Runnable() {
             @Override
             public void run() {
-                getBinding().addEventConatiner.setX(getBinding().vp.getWidth());
+                if (getBinding().ntsTop.getTabIndex() != 0)
+                    getBinding().addEventConatiner.setX(getBinding().vp.getWidth());
+                else
+                    getBinding().addEventConatiner.setX(getBinding().vp.getWidth()-getBinding().addEventConatiner.getWidth());
             }
         });
+    }
 
+    void configureFab() {
         getBinding().addEventFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -182,14 +189,14 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 Intent act = new Intent(getActivity(), EventActivity.class);
-                                if(((EditText)dialogView.findViewById(R.id.name)).getText()==null||((EditText)dialogView.findViewById(R.id.name)).getText().length()<4){
-                                    Toast.makeText(getContext(),"Длина имени должна быть не менее 4 символов",Toast.LENGTH_SHORT).show();
+                                if (((EditText) dialogView.findViewById(R.id.name)).getText() == null || ((EditText) dialogView.findViewById(R.id.name)).getText().length() < 4) {
+                                    Toast.makeText(getContext(), "Длина имени должна быть не менее 4 символов", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 Bundle extras = new Bundle();
-                                extras.putString("newEventName",((EditText)dialogView.findViewById(R.id.name)).getText().toString());
-                                extras.putString("newGroupName",((EditText)dialogView.findViewById(R.id.group)).getText().toString());
-                                extras.putBoolean("eventAccepted",true);
+                                extras.putString("newEventName", ((EditText) dialogView.findViewById(R.id.name)).getText().toString());
+                                extras.putString("newGroupName", ((EditText) dialogView.findViewById(R.id.group)).getText().toString());
+                                extras.putBoolean("eventAccepted", true);
                                 act.putExtras(extras);
                                 startActivity(act);
                             }
@@ -198,8 +205,19 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
             }
         });
 
+    }
 
-        getViewModel().avatarListener = new Runnable() {
+    @Override
+    protected ProfileAuthorizedFragmentVM onCreateViewModel(FragmentProfileAuthorizedBinding binding) {
+
+        ProfileAuthorizedFragmentVM viewModel = new ProfileAuthorizedFragmentVM(this);
+
+        configureScreenAndMenu();
+        configureViewPager();
+        configureFab();
+        configureTab();
+
+        viewModel.avatarListener = new Runnable() {
             @Override
             public void run() {
                 Picasso.with(getContext())
@@ -225,7 +243,7 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
 
                     @Override
                     public void onBitmapFailed(Drawable errorDrawable) {
-                        Log.d("123", "123");
+
                     }
 
                     @Override
@@ -240,30 +258,25 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
             }
         };
 
+
+        return viewModel;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
         getViewModel().updateUI();
+        if (getBinding().ntsTop.getTabIndex() != 0)
+            getBinding().addEventConatiner.setX(getBinding().vp.getWidth());
+        else
+            getBinding().addEventConatiner.setX(getBinding().vp.getWidth()-getBinding().addEventConatiner.getWidth());
     }
-
-    public void updateAvatar(Bitmap img) {
-        final float scale = getContext().getResources().getDisplayMetrics().density;
-        int pixels = (int) (96 * scale + 0.5f);
-        getBinding().avatar.setImageBitmap(img);
-        getBinding().avatar.getLayoutParams().height = pixels;
-        getBinding().avatar.getLayoutParams().width = pixels;
-        Blurry.with(getContext())
-                .radius(10)
-                .sampling(8)
-                .color(Color.argb(20, 0, 0, 0))
-                .async()
-                .from(img)
-                .into(getBinding().appBarImage);
-
-    }
-
 
     @Override
     public int getVariable() {

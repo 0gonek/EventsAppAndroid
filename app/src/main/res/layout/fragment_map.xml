@@ -39,7 +39,7 @@
                 android:focusableInTouchMode="true"
                 android:layout_width="0px"
                 android:layout_height="0px"/>
-            <EditText
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Поиск"
@@ -47,9 +47,11 @@
                 android:ems="10"
                 android:id="@+id/searchEditText"
                 android:layout_gravity="center"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="16dp"
-                android:background="@android:color/transparent" />
+                android:background="@android:color/transparent"
+                android:paddingLeft="48dp"
+                android:lines="1"
+                android:singleLine="true"
+                android:paddingRight="16dp" />
         </android.support.v7.widget.CardView>
 
     </RelativeLayout>

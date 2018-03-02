@@ -1,27 +1,35 @@
 package ru.pds.eventsapp.Views;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LongSparseArray;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import ru.pds.eventsapp.Adapters.EventsSearchAdapter;
 import ru.pds.eventsapp.Models.PojoEvent;
 import ru.pds.eventsapp.Models.PojoEventForMap;
 import ru.pds.eventsapp.Models.PojoEventsForMap;
 import ru.pds.eventsapp.R;
 import ru.pds.eventsapp.BR;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -34,6 +42,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 import com.stfalcon.androidmvvmhelper.mvvm.fragments.BindingFragment;
 
 import java.text.SimpleDateFormat;
@@ -47,11 +56,12 @@ import ru.pds.eventsapp.ViewModels.MapFragmentVM;
 import ru.pds.eventsapp.databinding.FragmentMapBinding;
 
 
-class EventInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
+class EventInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     private final View myContentsView;
     private final Activity _activity;
-    public  EventInfoWindowAdapter(Activity activity){
+
+    public EventInfoWindowAdapter(Activity activity) {
         _activity = activity;
         myContentsView = activity.getLayoutInflater().inflate(R.layout.map_info_window, null);
     }
@@ -64,21 +74,32 @@ class EventInfoWindowAdapter implements GoogleMap.InfoWindowAdapter{
     @Override
     public View getInfoContents(Marker marker) {
 
-        if(marker.getSnippet()==null||marker.getSnippet().length()==0) {
+        if (marker.getSnippet() == null || marker.getSnippet().length() == 0) {
             ((TextView) myContentsView.findViewById(R.id.eventName)).setText("Загрузка...");
             ((TextView) myContentsView.findViewById(R.id.eventGroup)).setText("");
             ((TextView) myContentsView.findViewById(R.id.eventDate)).setText("");
+            Picasso.with(_activity)
+                    .load(R.drawable.ic_loading_placeholder)
+                    .into((ImageView) myContentsView.findViewById(R.id.eventPic));
 
 
             return myContentsView;
-        }else {
+        } else {
 
-            PojoEvent pojoEvent =new GsonBuilder().create().fromJson(marker.getSnippet(),PojoEvent.class);
-            ((TextView)myContentsView.findViewById(R.id.eventName)).setText(pojoEvent.name);
-            ((TextView)myContentsView.findViewById(R.id.eventGroup)).setText(pojoEvent.groupName);
-            ((TextView)myContentsView.findViewById(R.id.eventDate)).setText(new SimpleDateFormat("dd MMM, yyyy г., HH:MM").format(new Date(pojoEvent.date)));
+            PojoEvent pojoEvent = new GsonBuilder().create().fromJson(marker.getSnippet(), PojoEvent.class);
+            Bitmap avatar = new GsonBuilder().create().fromJson(marker.getId(),Bitmap.class);
+            ((TextView) myContentsView.findViewById(R.id.eventName)).setText(pojoEvent.name);
 
+            if(pojoEvent.groupName==null||pojoEvent.groupName.length()==0)
+                (myContentsView.findViewById(R.id.eventGroup)).setVisibility(View.GONE);
+            else
+                (myContentsView.findViewById(R.id.eventGroup)).setVisibility(View.VISIBLE);
 
+            ((TextView) myContentsView.findViewById(R.id.eventGroup)).setText(pojoEvent.groupName);
+            ((TextView) myContentsView.findViewById(R.id.eventGroup)).setSingleLine(true);
+
+            ((TextView) myContentsView.findViewById(R.id.eventDate)).setText(new SimpleDateFormat("dd MMM, yyyy г., HH:mm").format(new Date(pojoEvent.date)));
+            ((ImageView) myContentsView.findViewById(R.id.eventPic)).setImageBitmap(avatar);
             return myContentsView;
         }
     }
@@ -92,14 +113,22 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
     }
 
     private GoogleMap mMap;
-    private  Marker openedMarker=null;
+    private Marker openedMarker = null;
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setInfoWindowAdapter(new EventInfoWindowAdapter(getActivity()));
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng moscow = new LatLng(55.751244, 37.618423);
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(moscow));
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
+        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.muted_map_style));
         cache = new LongSparseArray<>();
         mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
@@ -203,6 +232,8 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
             }
         };
 
+
+        getBinding().searchEditText.setAdapter(new EventsSearchAdapter(getContext()));
 
         return fragmentVM;
     }

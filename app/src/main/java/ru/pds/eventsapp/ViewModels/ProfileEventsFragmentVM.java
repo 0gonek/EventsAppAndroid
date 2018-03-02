@@ -1,6 +1,7 @@
 package ru.pds.eventsapp.ViewModels;
 
 import android.support.v7.widget.LinearLayoutManager;
+import android.widget.Toast;
 
 import com.stfalcon.androidmvvmhelper.mvvm.fragments.FragmentViewModel;
 
@@ -29,6 +30,10 @@ public class ProfileEventsFragmentVM extends FragmentViewModel<ProfileEventsFrag
     public ProfileEventsFragmentVM(ProfileEventsFragment fragment, int type) {
         super(fragment);
         this.type = type;
+        //loadEvents();
+    }
+
+    public void loadEvents() {
 
         WalkerApi.getInstance().profileEvents(type).subscribe(new Consumer<PojoSmallEvents>() {
             @Override
@@ -38,29 +43,8 @@ public class ProfileEventsFragmentVM extends FragmentViewModel<ProfileEventsFrag
         }, new Consumer<Throwable>() {
             @Override
             public void accept(@NonNull Throwable throwable) throws Exception {
-
             }
         });
-
-
-    }
-
-    public void loadEvents() {
-
-        WalkerApi.getInstance().profileEvents(type).subscribe(
-                new Consumer<PojoSmallEvents>() {
-                    @Override
-                    public void accept(@NonNull PojoSmallEvents pojoSmallEvents) throws Exception {
-
-                    }
-                },
-                new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-
-                    }
-                });
-
     }
 
 }

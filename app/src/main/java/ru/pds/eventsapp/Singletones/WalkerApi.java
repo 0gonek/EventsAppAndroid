@@ -13,6 +13,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -40,6 +41,7 @@ public class WalkerApi {
     public ApiService getApiService() {
         return new Retrofit.Builder()
                 .baseUrl(API_URL)
+                .client(new OkHttpClient())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build().create(ApiService.class);
@@ -55,32 +57,19 @@ public class WalkerApi {
 
     }
 
+    public Single<PojoSmallEvents> searchEvents(String part) {
+
+        ApiService apiService = getApiService();
+        Single<PojoSmallEvents> call = apiService.searchEvents(AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken,part);
+
+        return call.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
     public Single<PojoSmallEvents> profileEvents(int type) {
 
         ApiService apiService = getApiService();
         Single<PojoSmallEvents> call = apiService.profileEvents(type, AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken);
-
-            /*call = new Single<PojoSmallEvents>(){
-
-                @Override
-                protected void subscribeActual(@NonNull SingleObserver<? super PojoSmallEvents> observer) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    PojoSmallEvents events = new PojoSmallEvents();
-                    events.pojoEvents = new PojoSmallEvent[10];
-                    for (int i = 0; i < 10; i++) {
-                        events.pojoEvents[i] = new PojoSmallEvent();
-                        events.pojoEvents[i].id=(long)i;
-                        events.pojoEvents[i].name="My dick is "+i+" cm";
-                        events.pojoEvents[i].description = "Really nigger I'm not lying.(Actually "+(i*10)+" cm)";
-                    }
-                    observer.onSuccess(events);
-                }
-            };
-    */
 
         return call.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
@@ -156,5 +145,9 @@ public class WalkerApi {
                 .new_participant(AuthenticatorSingleton.getInstance().currentUser.serverID,AuthenticatorSingleton.getInstance().currentUser.serverID,eventId,AuthenticatorSingleton.getInstance().accessToken)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public String imageUrl(String path){
+        return API_URL+"events/get_picture?path="+path;
     }
 }

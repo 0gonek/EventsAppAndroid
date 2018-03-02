@@ -69,4 +69,19 @@ public interface ApiService {
             @Query("participant_id") Long participant_id,
             @Query("event_id") Long eventId,
             @Query("token") String token );
+
+    @GET("/events/search")
+    Single<PojoSmallEvents> searchEvents(
+            @Query("id") Long userId,
+            @Query("token") String token,
+            @Query("part") String part
+    );
+/*
+    @GET("/events/get_picture")
+    Single<byte[]> getPicture(
+            @Query("id") Long userId,
+            @Query("token") String token,
+            @Query("directory") String directory
+    );*/
+
 }

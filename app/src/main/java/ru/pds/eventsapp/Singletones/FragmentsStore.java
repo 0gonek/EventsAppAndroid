@@ -44,7 +44,8 @@ public class FragmentsStore {
 
     public ProfileAuthorizedFragment getAuthorizedFragment() {
 
-        if (authorizedFragment == null) authorizedFragment = new ProfileAuthorizedFragment();
+        if (authorizedFragment == null)
+            authorizedFragment = new ProfileAuthorizedFragment();
         return authorizedFragment;
     }
 

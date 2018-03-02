@@ -36,9 +36,6 @@ public class ProfileAuthorizedFragmentVM extends FragmentViewModel<ProfileAuthor
 
     public void refresh(){
 
-
-
-
     }
     public void changeName(){
 
@@ -52,34 +49,7 @@ public class ProfileAuthorizedFragmentVM extends FragmentViewModel<ProfileAuthor
 
         name.set(AuthenticatorSingleton.getInstance().currentUser.name);
         avatarListener.run();
-        /*
-        Observable<Bitmap> loadImg = new Observable<Bitmap>() {
-            @Override
-            protected void subscribeActual(Observer<? super Bitmap> observer) {
-                try {
-                    InputStream in = new java.net.URL(AuthenticatorSingleton.getInstance().currentUser.avatar).openStream();
-                    Bitmap avatar = BitmapFactory.decodeStream(in);
 
-                    if (avatar != null) {
-                        observer.onNext(avatar);
-                        observer.onComplete();
-                    }
-
-                } catch (Exception e) {
-                    observer.onError(e);
-                }
-            }
-        };
-
-
-        loadImg.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(avatarListener, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(@NonNull Throwable throwable) throws Exception {
-
-                    }
-                });*/
     }
 
     public Runnable avatarListener;

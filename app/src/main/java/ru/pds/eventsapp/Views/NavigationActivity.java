@@ -126,7 +126,7 @@ public class NavigationActivity extends BindingActivity<ActivityNavigationBindin
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
             Slide slide = new Slide(Gravity.LEFT);
-            slide.setDuration(200);
+            slide.setDuration(150);
 
             getWindow().setAllowEnterTransitionOverlap(false);
             getWindow().setAllowReturnTransitionOverlap(false);
@@ -154,7 +154,7 @@ public class NavigationActivity extends BindingActivity<ActivityNavigationBindin
 
             solyanka.addTransition(changeBounds);
 
-            getWindow().setSharedElementEnterTransition(solyanka);
+            getWindow().setSharedElementReenterTransition(solyanka);
             setEnterSharedElementCallback(new EnterSharedElementCallback(this));
 
 

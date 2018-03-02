@@ -360,7 +360,7 @@
                             android:inputType="textMultiLine"
                             android:layout_below="@+id/placeEditContainer"
                             android:layout_alignStart="@+id/placeEditContainer"
-                            android:layout_marginTop="24dp"
+                            android:layout_marginTop="8dp"
                             android:layout_marginRight="16dp"
                             android:textColor="#444"
                             app:errorEnabled="true"

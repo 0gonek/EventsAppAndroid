@@ -2,13 +2,20 @@ package ru.pds.eventsapp.Views;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.res.ResourcesCompat;
 import android.transition.ChangeBounds;
@@ -22,12 +29,15 @@ import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
 import ru.pds.eventsapp.CustomViews.EnterSharedElementCallback;
 import ru.pds.eventsapp.CustomViews.TextSizeTransition;
 import ru.pds.eventsapp.Models.PojoEvent;
@@ -35,16 +45,23 @@ import ru.pds.eventsapp.Models.PojoNewEvent;
 import ru.pds.eventsapp.R;
 import ru.pds.eventsapp.BR;
 
-import com.alium.nibo.models.NiboSelectedPlace;
-import com.alium.nibo.placepicker.NiboPlacePickerActivity;
-import com.alium.nibo.utils.NiboConstants;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.games.event.Event;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 import com.stfalcon.androidmvvmhelper.mvvm.activities.BindingActivity;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
 import ru.pds.eventsapp.ViewModels.EventActivityVM;
@@ -61,14 +78,19 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
     boolean editMode = false;
     boolean createMode = false;
 
-    public void eventCreated(Long id) {
-        Toast.makeText(this, "Success " + id, Toast.LENGTH_SHORT).show();
+    Bitmap imageBeforeEdit = null;
 
-        rippleEditOff();
+    public void eventCreated(Long id) {
         getViewModel().event.set(new PojoEvent());
         getViewModel().event.get().id = id;
-
+        rippleEditOff();
         getViewModel().fetchEvent();
+    }
+
+    public void exitEditMode(Boolean exit) {
+        editMode = !exit;
+        if (exit)
+            rippleEditOff();
     }
 
     public void eventCreateFailed() {
@@ -155,15 +177,14 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             @Override
             public void onClick(View view) {
                 if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    Intent intent = new Intent(view.getContext(), NiboPlacePickerActivity.class);
-                    NiboPlacePickerActivity.NiboPlacePickerBuilder config = new NiboPlacePickerActivity.NiboPlacePickerBuilder()
-                            .setSearchBarTitle("Выбор места")
-                            .setConfirmButtonTitle("Ок?");
-
-                    NiboPlacePickerActivity.setBuilder(config);
-                    startActivityForResult(intent, 1);
+                    PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                    try {
+                        startActivityForResult(builder.build(EventActivity.this),30);
+                    } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                        e.printStackTrace();
+                    }
                 } else {
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1337);
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1000);
                 }
 
 
@@ -171,62 +192,179 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
+    byte[] newImageToBytes(){
+        ImageView imageView = getBinding().eventPic;
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        final int maxSize = 480;
+        int outWidth;
+        int outHeight;
+        int inWidth = bitmap.getWidth();
+        int inHeight = bitmap.getHeight();
+        if(inWidth > inHeight){
+            outWidth = maxSize;
+            outHeight = (inHeight * maxSize) / inWidth;
+        } else {
+            outHeight = maxSize;
+            outWidth = (inWidth * maxSize) / inHeight;
+        }
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, outWidth, outHeight, false);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
+        byte[] image = baos.toByteArray();
+        try { baos.close(); } catch (IOException e) { e.printStackTrace(); }
+        return image;
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
-        if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            Intent intent = new Intent(_ctx, NiboPlacePickerActivity.class);
-            NiboPlacePickerActivity.NiboPlacePickerBuilder config = new NiboPlacePickerActivity.NiboPlacePickerBuilder()
-                    .setSearchBarTitle("Выбор места")
-                    .setConfirmButtonTitle("Ок?");
-
-            NiboPlacePickerActivity.setBuilder(config);
-            startActivityForResult(intent, 1);
+        if ((hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) && requestCode == 1000) {
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            try {
+                startActivityForResult(builder.build(EventActivity.this),30);
+            } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            }
+            return;
         }
-
+        if (hasPermission(Manifest.permission.CAMERA) && hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) && requestCode == 1337)
+            pickFromCamera();
+        else if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) && requestCode == 1338)
+            pickFromGallery();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     private boolean hasPermission(String perm) {
-        return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return (PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+        } else {
+            return true;
+        }
     }
 
+    void pickFromCamera() {
+        final Activity activity = this;
+        if (hasPermission(Manifest.permission.CAMERA))
+            EasyImage.openCamera(activity, 0);
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1337);
+        }
+    }
+
+    void pickFromGallery() {
+        final Activity activity = this;
+        if (hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+            EasyImage.openGallery(activity, 0);
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1338);
+        }
+    }
+
+    void pickImage() {
+        if (!editMode)
+            return;
+
+        AlertDialog.Builder dialogB = new AlertDialog.Builder(this);
+        dialogB.setTitle("Выбрать изображение");
+        dialogB.setItems(new CharSequence[]{"Камера", "Галерея"}, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                switch (i) {
+                    case 0: {
+                        pickFromCamera();
+                        break;
+                    }
+                    case 1: {
+                        pickFromGallery();
+                        break;
+                    }
+                }
+            }
+        });
+        dialogB.create().show();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 1) {
+        if (requestCode == 30) {
             if (resultCode == RESULT_OK) {
-                NiboSelectedPlace selectedPlace = data.getParcelableExtra(NiboConstants.SELECTED_PLACE_RESULT);
-
-                double latitude = selectedPlace.getLatLng().latitude;
-                double longitude = selectedPlace.getLatLng().longitude;
+                Place place = PlacePicker.getPlace(data, this);
+                double latitude = place.getLatLng().latitude;
+                double longitude = place.getLatLng().longitude;
                 getBinding().placeEdit.setText(latitude + ", " + longitude);
             }
+        }
+        final Activity activity = this;
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
+                if(imageBeforeEdit==null)
+                    imageBeforeEdit=((BitmapDrawable)getBinding().eventPic.getDrawable()).getBitmap();
+                Picasso.with(activity).load(imageFile).into(getBinding().eventPic);
+            }
+        });
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (createMode || !editMode)
+            super.onBackPressed();
+        else {
+            editMode = false;
+            getBinding().eventPic.setImageBitmap(imageBeforeEdit);
+            rippleEditOff();
+        }
+    }
+
+    void fillEditFields() {
+        if (editMode && !createMode) {
+            getBinding().eventNameEdit.setText(getBinding().eventName.getText().toString());
+            getBinding().groupNameEdit.setText(getBinding().groupName.getText().toString());
+            getBinding().privacyCheckbox.setChecked(getViewModel().event.get().privacy);
+            getBinding().descEdit.setText(getBinding().eventDesc.getText());
+            getBinding().placeEdit.setText(getViewModel().event.get().latitude + ", " + getViewModel().event.get().longitude);
+
+            String s = getBinding().dateWhen.getText().toString();
+            getBinding().whenEdit.setText(s.substring(0, s.length() - 7));
+            getBinding().whenTime.setText(s.substring(s.length() - 5, s.length()));
+
+            s = getBinding().dateUntil.getText().toString();
+            getBinding().untilEdit.setText(s.substring(0, s.length() - 7));
+            getBinding().untilTime.setText(s.substring(s.length() - 5, s.length()));
         }
     }
 
     void rippleEditOn() {
+        try {
+            getBinding().fab.setImageResource(R.drawable.ic_check_white_24dp);
+            getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorCreate, null)));
 
-        getBinding().fab.setImageResource(R.drawable.ic_check_white_24dp);
-        getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorCreate, null)));
+            fillEditFields();
 
+            int x = (int) getBinding().fab.getX();
+            int y = (int) getBinding().fab.getY();
+            int startRadius = 0;
+            int endRadius = (int) Math.hypot(x, getBinding().layoutContent.getHeight() - y);
 
-        int x = (int) getBinding().fab.getX();
-        int y = (int) getBinding().fab.getY();
-        int startRadius = 0;
-        int endRadius = (int) Math.hypot(x, getBinding().layoutContent.getHeight() - y);
+            Animator anim = ViewAnimationUtils.createCircularReveal(getBinding().editLayout, x, y, startRadius, endRadius);
+            getBinding().editLayout.setVisibility(View.VISIBLE);
 
-        Animator anim = ViewAnimationUtils.createCircularReveal(getBinding().editLayout, x, y, startRadius, endRadius);
-        getBinding().editLayout.setVisibility(View.VISIBLE);
-
-        anim.start();
+            anim.start();
+        }catch (Exception e){}
     }
 
     void rippleEditOff() {
 
         configureFab();
+        imageBeforeEdit=null;
 
         int x = (int) getBinding().fab.getX();
         int y = (int) getBinding().fab.getY();
@@ -266,7 +404,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             getBinding().fab.setImageResource(R.drawable.ic_mode_edit_white_24dp);
             getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorBackground, null)));
         } else {
-            if (getViewModel().event.get().accepted ==null||!getViewModel().event.get().accepted) {
+            if (getViewModel().event.get().accepted == null || !getViewModel().event.get().accepted) {
                 getBinding().fab.setImageResource(R.drawable.ic_check_white_24dp);
                 getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorCreate, null)));
             } else {
@@ -293,17 +431,30 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
                 configureFab();
             }
         });
+        viewModel.updatePicture.observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<String>() {
+            @Override
+            public void accept(@NonNull String o) throws Exception {
+                Picasso.with(EventActivity.this)
+                        .load(o)
+                        .placeholder(R.drawable.ic_loading_placeholder)
+                        .error(R.drawable.com_facebook_profile_picture_blank_portrait)
+                        .into(getBinding().eventPic);
+            }
+        });
+
+
+        getBinding().eventPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickImage();
+            }
+        });
 
         getBinding().toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View view) {
-                if (createMode || !editMode)
-                    onBackPressed();
-                else {
-                    editMode = false;
-                    rippleEditOff();
-                }
+                onBackPressed();
 
             }
         });
@@ -331,15 +482,16 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
 
             if (getIntent().getStringExtra("eventInfo") != null && getIntent().getStringExtra("eventInfo").length() != 0) {
                 init = new GsonBuilder().create().fromJson(getIntent().getStringExtra("eventInfo"), PojoEvent.class);
+                viewModel.putData(init);
             } else {
                 init.name = getIntent().getStringExtra("eventName");
                 init.groupId = 0L;
                 init.description = getIntent().getStringExtra("eventDesc");
                 init.accepted = getIntent().getBooleanExtra("eventAccepted", false);
                 init.id = getIntent().getLongExtra("eventId", 0);
+                viewModel.putData(init);
                 viewModel.fetchEvent();
             }
-            viewModel.putData(init);
         }
 
         configurePickers();
@@ -353,7 +505,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
 
     Long parseDate(String input) {
         try {
-            return new SimpleDateFormat("dd MMM, yyyy г. HH:MM").parse(input).getTime();
+            return new SimpleDateFormat("dd MMM, yyyy г. HH:mm").parse(input).getTime();
         } catch (ParseException e) {
             return null;
         }
@@ -406,7 +558,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             getBinding().placeEditContainer.setError("Обязательное поле");
             return null;
         }
-        newEvent.picture = null;
+        newEvent.picture = newImageToBytes();
 
         return newEvent;
 
@@ -428,10 +580,10 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 
             getWindow().setAllowEnterTransitionOverlap(false);
-            getWindow().setAllowReturnTransitionOverlap(false);
+            //getWindow().setAllowReturnTransitionOverlap(false);
 
             Slide explode = new Slide(Gravity.RIGHT);
-            explode.setDuration(200);
+            explode.setDuration(150);
 
             explode.excludeTarget(R.id.bottom_navigation, true);
             explode.excludeChildren(R.id.bottom_navigation, true);
@@ -456,7 +608,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             solyanka.addTransition(resize2);
             solyanka.addTransition(changeBounds);
 
-            setEnterSharedElementCallback(new EnterSharedElementCallback(this, Pair.create(16f, 22f), Pair.create(16f, 14f)));
+            //setEnterSharedElementCallback(new EnterSharedElementCallback(this, Pair.create(16f, 22f), Pair.create(16f, 14f)));
 
 
         }
@@ -487,13 +639,22 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             }
             return;
         }
+        if (canEdit() && !editMode) {
+            PojoNewEvent newEvent = collectCreateFields();
 
+            if (newEvent != null) {
+                getViewModel().changeEvent(newEvent);
+                return;
+            }
+            editMode = true;
+            return;
+        }
         if (canEdit())
             if (editMode)
                 rippleEditOn();
             else
                 rippleEditOff();
-        else if (getViewModel().event.get().accepted !=null&&getViewModel().event.get().accepted)
+        else if (getViewModel().event.get().accepted != null && getViewModel().event.get().accepted)
             getViewModel().rejectEvent();
         else
             getViewModel().acceptEvent();
