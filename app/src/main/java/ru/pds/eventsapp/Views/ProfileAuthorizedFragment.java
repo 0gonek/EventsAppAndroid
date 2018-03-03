@@ -195,7 +195,7 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
                                 }
                                 Bundle extras = new Bundle();
                                 extras.putString("newEventName", ((EditText) dialogView.findViewById(R.id.name)).getText().toString());
-                                extras.putString("newGroupName", ((EditText) dialogView.findViewById(R.id.group)).getText().toString());
+                                extras.putString("newGroupName", null);
                                 extras.putBoolean("eventAccepted", true);
                                 act.putExtras(extras);
                                 startActivity(act);

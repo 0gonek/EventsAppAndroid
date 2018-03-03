@@ -20,8 +20,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@mipmap/ic_walker"
+        android:label="Walker"
         android:supportsRtl="true"
         tools:replace="android:theme"
         android:theme="@style/AppTheme">
@@ -51,6 +51,7 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Views.NavigationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -58,6 +59,7 @@
         </activity>
 
         <activity android:name=".Views.EventActivity"
+            android:screenOrientation="portrait"
             android:parentActivityName=".Views.NavigationActivity">
         <!-- Parent activity meta-data to support 4.0 and lower -->
         <meta-data
@@ -65,6 +67,10 @@
             android:value=".Views.NavigationActivity" />
 
         </activity>
+        <activity android:name=".Views.GroupActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".Views.ParticipantsActivity"
+            android:screenOrientation="portrait"/>
 
     </application>
 

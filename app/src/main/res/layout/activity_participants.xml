@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="ru.pds.eventsapp.ViewModels.ParticipantsActivityVM" />
+    </data>
+
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorBackground"
+            android:theme="?attr/actionBarTheme"
+            android:minHeight="?attr/actionBarSize"
+            android:id="@+id/toolbar2"
+            app:title="Участники"
+            app:titleTextColor="#FAFAFA"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/toolbar2"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="8dp"
+            android:id="@+id/listView" />
+    </RelativeLayout>
+
+</layout>

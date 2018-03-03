@@ -19,10 +19,4 @@
         android:icon="@drawable/ic_person_white_24dp"
         android:title="@string/text_profile"
         app:showAsAction="ifRoom" />
-    <item
-        android:id="@+id/action_settings"
-        android:enabled="true"
-        android:icon="@drawable/ic_settings_white_24dp"
-        android:title="@string/text_settings"
-        app:showAsAction="ifRoom" />
 </menu>

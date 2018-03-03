@@ -21,12 +21,17 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.pds.eventsapp.Models.LoginModel;
 import ru.pds.eventsapp.Models.PojoChangeEvent;
+import ru.pds.eventsapp.Models.PojoChangeGroup;
 import ru.pds.eventsapp.Models.PojoEvent;
 import ru.pds.eventsapp.Models.PojoEventForMap;
 import ru.pds.eventsapp.Models.PojoEventsForMap;
+import ru.pds.eventsapp.Models.PojoGroup;
+import ru.pds.eventsapp.Models.PojoGroupIdNames;
 import ru.pds.eventsapp.Models.PojoNewEvent;
+import ru.pds.eventsapp.Models.PojoNewGroup;
 import ru.pds.eventsapp.Models.PojoSmallEvent;
 import ru.pds.eventsapp.Models.PojoSmallEvents;
+import ru.pds.eventsapp.Models.PojoUsersList;
 import ru.pds.eventsapp.Services.ApiService;
 
 public class WalkerApi {
@@ -65,7 +70,14 @@ public class WalkerApi {
         return call.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+    public Single<PojoGroupIdNames> searchGroups(String part) {
 
+        ApiService apiService = getApiService();
+        Single<PojoGroupIdNames> call = apiService.searchGroups(AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken,part,0,1000);
+
+        return call.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
     public Single<PojoSmallEvents> profileEvents(int type) {
 
         ApiService apiService = getApiService();
@@ -144,6 +156,91 @@ public class WalkerApi {
         return getApiService()
                 .new_participant(AuthenticatorSingleton.getInstance().currentUser.serverID,AuthenticatorSingleton.getInstance().currentUser.serverID,eventId,AuthenticatorSingleton.getInstance().accessToken)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+
+
+    public Single<PojoGroup> getGroup(long id){
+
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+
+        return getApiService()
+                .groupInfo(
+                        AuthenticatorSingleton.getInstance().currentUser.serverID,
+                        id,
+                        AuthenticatorSingleton.getInstance().accessToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<Boolean> changeGroup(PojoChangeGroup changes){
+
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+
+        changes.token = AuthenticatorSingleton.getInstance().accessToken;
+        changes.ownerId = AuthenticatorSingleton.getInstance().currentUser.serverID;
+
+        return getApiService()
+                .changeGroup(changes)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<Long> newGroup(PojoNewGroup newGroup){
+
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+
+        newGroup.token = AuthenticatorSingleton.getInstance().accessToken;
+        newGroup.ownerId = AuthenticatorSingleton.getInstance().currentUser.serverID;
+
+        return getApiService()
+                .newGroup(newGroup)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+    public Single<Boolean> subscribeGroup(Long eventId){
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+        return getApiService()
+                .subscribeGroup(AuthenticatorSingleton.getInstance().currentUser.serverID,eventId,AuthenticatorSingleton.getInstance().accessToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+    public Single<Boolean> unsubscribeGroup(Long eventId){
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+        return getApiService()
+                .unsubscribeGroup(AuthenticatorSingleton.getInstance().currentUser.serverID,AuthenticatorSingleton.getInstance().currentUser.serverID,eventId,AuthenticatorSingleton.getInstance().accessToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+    public Single<PojoGroupIdNames> getOwnGroups(){
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return null;
+        return getApiService()
+                .getOwnGroups(AuthenticatorSingleton.getInstance().currentUser.serverID,AuthenticatorSingleton.getInstance().accessToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Single<PojoUsersList> getGroupParticipants( Long id ) {
+
+        ApiService apiService = getApiService();
+        Single<PojoUsersList> call = apiService.getGroupParticipants(AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken,id);
+
+        return call.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+    public Single<PojoUsersList> getEventParticipants( Long id ) {
+
+        ApiService apiService = getApiService();
+        Single<PojoUsersList> call = apiService.getEventParticipants(AuthenticatorSingleton.getInstance().currentUser.serverID, AuthenticatorSingleton.getInstance().accessToken,id);
+
+        return call.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

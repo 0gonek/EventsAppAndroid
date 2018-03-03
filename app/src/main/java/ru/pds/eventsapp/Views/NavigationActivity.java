@@ -91,9 +91,6 @@ public class NavigationActivity extends BindingActivity<ActivityNavigationBindin
                                 else
                                     changeFragment(FragmentsStore.getInstance().getProfileFragment(), "profile");
                                 return true;
-                            case R.id.action_settings:
-                                changeFragment(FragmentsStore.getInstance().getSettingsFragment(), "settings");
-                                return true;
                         }
                         return true;
                     }

@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="ru.pds.eventsapp.ViewModels.GroupActivityVM" />
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/layoutContent">
+
+        <ImageView
+            android:id="@+id/group_pic"
+            android:layout_width="match_parent"
+            android:layout_height="192dp"
+            android:layout_alignParentStart="true"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/com_facebook_profile_picture_blank_square" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            app:fabSize="normal"
+            app:layout_anchor="@id/group_pic"
+            app:layout_anchorGravity="bottom|right"
+            app:srcCompat="@drawable/ic_mode_edit_white_24dp"
+            android:layout_marginRight="16dp"
+            app:backgroundTint="@color/colorBackground" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:background="@drawable/triangle"
+            app:layout_anchor="@id/group_pic"
+            android:layout_gravity="top"
+            app:layout_anchorGravity="bottom"
+            android:layout_height="30dp">
+
+        </FrameLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="192dp"
+            android:id="@+id/viewLayout"
+            android:background="#FAFAFA">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="16dp"
+                        android:id="@+id/fields"
+                        android:paddingBottom="16dp">
+
+                        <TextView
+                            android:text="@{viewModel.groupName}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/group_name"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"
+                            android:textSize="22sp"
+                            android:textColor="#444"
+                            android:layout_marginRight="100dp"
+                            android:transitionName="eventName"
+                            android:textAlignment="viewStart" />
+
+                        <TextView
+                            android:text="@{viewModel.description}"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/group_name"
+                            android:layout_alignStart="@+id/group_name"
+                            android:id="@+id/group_desc"
+                            android:transitionName="eventDesc"
+                            android:layout_marginTop="32dp"
+                            android:layout_marginRight="16dp"
+                            android:textColor="#444"
+                            android:fontFamily="sans-serif"
+                            android:lineSpacingExtra="8sp" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/fields"
+                        android:layout_alignStart="@+id/fields">
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:id="@+id/exit_button"
+                            android:background="?selectableItemBackground"
+                            android:clickable="true"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp">
+
+                            <TextView
+                                android:text="@{viewModel.participants}"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/participants_text"
+                                android:textSize="14sp"
+                                android:layout_marginLeft="46dp"
+                                android:layout_centerVertical="true" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_group_gray_24dp"
+                                android:id="@+id/imageView3"
+                                android:layout_centerVertical="true" />
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#22000000"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:navigationIcon="@drawable/ic_arrow_back_white_24dp"
+            android:clickable="true" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="192dp"
+            android:id="@+id/editLayout"
+            android:background="#FAFAFA"
+            android:visibility="gone">
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/fieldsEdit"
+                        android:paddingBottom="16dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="16dp">
+
+                        <TextView
+                            android:text="Колян и пацаны хотят забухать у падиков"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/group_name_edit"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"
+                            android:textSize="22sp"
+                            android:textColor="#444"
+                            android:layout_marginRight="100dp"
+                            android:transitionName="eventName"
+                            android:textAlignment="viewStart" />
+
+
+                        <EditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textMultiLine"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginRight="16dp"
+                            android:textColor="#444"
+                            app:errorEnabled="true"
+                            android:fontFamily="sans-serif"
+                            android:lineSpacingExtra="8sp"
+                            android:id="@+id/descEdit"
+                            android:hint="Описание"
+                            android:layout_below="@+id/group_name_edit"
+                            android:layout_alignStart="@+id/group_name_edit" />
+
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_below="@+id/fieldsEdit"
+                        android:layout_alignStart="@+id/fieldsEdit">
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:id="@+id/delete_button"
+                            android:background="?selectableItemBackground"
+                            android:clickable="true"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp">
+
+                            <TextView
+                                android:text="Удалить"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/delete"
+                                android:textSize="14sp"
+                                android:layout_marginLeft="46dp"
+                                android:layout_centerVertical="true"
+                                android:textColor="@color/colorRed" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_close_red_24dp"
+                                android:id="@+id/imageView4"
+                                android:layout_centerVertical="true" />
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
+
+        </RelativeLayout>
+
+    </android.support.design.widget.CoordinatorLayout>
+
+</layout>

@@ -76,12 +76,58 @@ public interface ApiService {
             @Query("token") String token,
             @Query("part") String part
     );
-/*
-    @GET("/events/get_picture")
-    Single<byte[]> getPicture(
+
+    @GET("/groups/search")
+    Single<PojoGroupIdNames> searchGroups(
             @Query("id") Long userId,
             @Query("token") String token,
-            @Query("directory") String directory
-    );*/
+            @Query("key_word") String part,
+            @Query("offset") Integer offset,
+            @Query("quantity") Integer quantity
+    );
+
+    @GET("/groups/get")
+    Single<PojoGroup> groupInfo(
+            @Query("id") long id,
+            @Query("group_id") long groupId,
+            @Query("token") String token);
+
+    @POST("/groups/change")
+    Single<Boolean> changeGroup(
+            @Body PojoChangeGroup changeModel
+    );
+
+    @POST("/groups/new")
+    Single<Long> newGroup(
+            @Body PojoNewGroup newModel
+    );
+    @GET("/groups/new_participant")
+    Single<Boolean> subscribeGroup(
+            @Query("id") Long id,
+            @Query("group_id") Long groupId,
+            @Query("token") String token );
+
+    @GET("/groups/delete_participant")
+    Single<Boolean> unsubscribeGroup(
+            @Query("id") Long id,
+            @Query("participant_id") Long participant_id,
+            @Query("group_id") Long groupId,
+            @Query("token") String token );
+
+    @GET("/groups/get_own")
+    Single<PojoGroupIdNames> getOwnGroups(
+            @Query("id") Long id,
+            @Query("token") String token );
+
+    @GET("/groups/get_participants")
+    Single<PojoUsersList> getGroupParticipants(
+            @Query("id") Long id,
+            @Query("token") String token,
+            @Query("group_id") Long groupId);
+    @GET("/events/get_participants")
+    Single<PojoUsersList> getEventParticipants(
+            @Query("id") Long id,
+            @Query("token") String token,
+            @Query("event_id") Long eventId);
 
 }

@@ -13,12 +13,19 @@
         android:id="@+id/parent">
 
 
+        <TextView
+            android:text="Загрузка..."
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/error"
+            android:layout_gravity="center" />
+
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
-            android:layout_margin="16dp"
             android:layout_height="48dp"
             app:cardCornerRadius="3dp"
-            android:id="@+id/searchBox">
+            android:id="@+id/searchBox"
+            android:layout_margin="16dp">
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -32,7 +39,7 @@
                 android:focusableInTouchMode="true"
                 android:layout_width="0px"
                 android:layout_height="0px"/>
-            <EditText
+            <AutoCompleteTextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:hint="Поиск"
@@ -40,16 +47,16 @@
                 android:ems="10"
                 android:id="@+id/searchEditText"
                 android:layout_gravity="center"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="16dp"
-                android:background="@android:color/transparent" />
+                android:background="@android:color/transparent"
+                android:paddingLeft="48dp"
+                android:lines="1"
+                android:singleLine="true"
+                android:paddingRight="16dp" />
         </android.support.v7.widget.CardView>
-
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:id="@+id/groupsRecycler"
-            app:layout_anchorGravity="bottom|left|end"
             android:layout_height="match_parent"
             android:layout_marginTop="72dp" />
 
@@ -63,6 +70,7 @@
             app:layout_anchor="@id/groupsRecycler"
             app:layout_anchorGravity="bottom|right|end"
             android:id="@+id/floatingActionButton" />
+
     </android.support.design.widget.CoordinatorLayout>
 
 </layout>

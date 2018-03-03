@@ -165,7 +165,6 @@ public class EventActivityVM extends ActivityViewModel<EventActivity> {
         changedEvent.type = event.get().type;
         changedEvent.participants = event.get().participants;
         changedEvent.pathToThePicture = event.get().pathToThePicture;
-
         changedEvent.date = newEvent.date;
         changedEvent.description = newEvent.description;
         changedEvent.duration = newEvent.duration;
@@ -187,8 +186,8 @@ public class EventActivityVM extends ActivityViewModel<EventActivity> {
                         if(!aBoolean)
                             Toast.makeText(getActivity(),"Произошла ошибка",Toast.LENGTH_SHORT).show();
                         else{
+                            changedEvent.pathToThePicture=null;
                             putData(changedEvent);
-                            //updatePicture();
                         }
 
                         getActivity().exitEditMode(aBoolean);

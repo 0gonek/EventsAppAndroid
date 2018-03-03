@@ -15,6 +15,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.res.ResourcesCompat;
@@ -179,7 +180,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
                 if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
                     PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                     try {
-                        startActivityForResult(builder.build(EventActivity.this),30);
+                        startActivityForResult(builder.build(EventActivity.this), 30);
                     } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                         e.printStackTrace();
                     }
@@ -192,7 +193,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         });
     }
 
-    byte[] newImageToBytes(){
+    byte[] newImageToBytes() {
         ImageView imageView = getBinding().eventPic;
         Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
         final int maxSize = 480;
@@ -200,7 +201,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         int outHeight;
         int inWidth = bitmap.getWidth();
         int inHeight = bitmap.getHeight();
-        if(inWidth > inHeight){
+        if (inWidth > inHeight) {
             outWidth = maxSize;
             outHeight = (inHeight * maxSize) / inWidth;
         } else {
@@ -212,7 +213,11 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 60, baos);
         byte[] image = baos.toByteArray();
-        try { baos.close(); } catch (IOException e) { e.printStackTrace(); }
+        try {
+            baos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return image;
     }
 
@@ -223,7 +228,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
                 || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) && requestCode == 1000) {
             PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
             try {
-                startActivityForResult(builder.build(EventActivity.this),30);
+                startActivityForResult(builder.build(EventActivity.this), 30);
             } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
                 e.printStackTrace();
             }
@@ -299,13 +304,11 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
             @Override
             public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
-                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
-                if(imageBeforeEdit==null)
-                    imageBeforeEdit=((BitmapDrawable)getBinding().eventPic.getDrawable()).getBitmap();
                 Picasso.with(activity).load(imageFile).into(getBinding().eventPic);
             }
         });
@@ -344,6 +347,8 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
 
     void rippleEditOn() {
         try {
+            imageBeforeEdit = ((BitmapDrawable) getBinding().eventPic.getDrawable()).getBitmap();
+
             getBinding().fab.setImageResource(R.drawable.ic_check_white_24dp);
             getBinding().fab.setBackgroundTintList(ColorStateList.valueOf(ResourcesCompat.getColor(getResources(), R.color.colorCreate, null)));
 
@@ -358,13 +363,14 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             getBinding().editLayout.setVisibility(View.VISIBLE);
 
             anim.start();
-        }catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 
     void rippleEditOff() {
 
         configureFab();
-        imageBeforeEdit=null;
+        imageBeforeEdit = null;
 
         int x = (int) getBinding().fab.getX();
         int y = (int) getBinding().fab.getY();
@@ -499,6 +505,21 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         getBinding().fab.setOnClickListener(this);
 
         createTransition();
+
+
+        getBinding().exitButton.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent a = new Intent(EventActivity.this, ParticipantsActivity.class);
+                        Bundle b = new Bundle();
+                        b.putLong("id",getViewModel().event.get().id);
+                        b.putBoolean("isGroup",false);
+                        a.putExtras(b);
+                        startActivity(a);
+                    }
+                }
+        );
 
         return viewModel;
     }
@@ -654,10 +675,13 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
                 rippleEditOn();
             else
                 rippleEditOff();
-        else if (getViewModel().event.get().accepted != null && getViewModel().event.get().accepted)
-            getViewModel().rejectEvent();
-        else
-            getViewModel().acceptEvent();
-
+        else {
+            editMode = false;
+            if (getViewModel().event.get().accepted != null && getViewModel().event.get().accepted)
+                getViewModel().rejectEvent();
+            else
+                getViewModel().acceptEvent();
+        }
     }
+
 }

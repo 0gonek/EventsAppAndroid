@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="ru.pds.eventsapp.ViewModels.GroupsListitemFragmentVM" />
+    </data>
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:clickable="true"
+        android:background="?selectableItemBackground"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_height="48dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/eventName"
+            android:text="@{viewModel.name}"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            android:maxLines="1"
+            android:textAlignment="viewStart"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+</layout>

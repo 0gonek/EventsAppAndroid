@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_height="wrap_content"
-    android:layout_width="wrap_content">
+    android:layout_width="150dp"
+    android:background="@drawable/info_window_bg">
 
     <ImageView
         app:srcCompat="@drawable/com_facebook_profile_picture_blank_square"
@@ -18,7 +19,10 @@
         android:layout_height="wrap_content"
         android:id="@+id/eventGroup"
         android:layout_marginTop="4dp"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp" />
 
     <TextView
         android:text="Название ивента"
@@ -27,7 +31,10 @@
         android:id="@+id/eventName"
         android:textColor="#444"
         android:textSize="14sp"
-        android:layout_marginTop="4dp" />
+        android:layout_marginTop="4dp"
+        android:singleLine="true"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp" />
 
     <TextView
         android:text="2 дек., 2017 г., 14:00"
@@ -35,7 +42,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/eventDate"
         android:layout_marginTop="4dp"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginRight="6dp" />
 
     <TextView
         android:text=">>"
@@ -43,5 +52,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/textView8"
         android:textAlignment="textEnd"
-        android:textSize="10sp" />
+        android:textSize="10sp"
+        android:layout_marginRight="8dp" />
 </LinearLayout>

@@ -8,4 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="TransparentBackground" parent="android:Theme.Light">
+        <item name="android:windowIsTranslucent">false</item> <!-- подлупрозрачность окна -->
+        <item name="android:windowBackground">@android:color/transparent</item> <!-- прозрачный цвет бэкграунда -->
+        <item name="android:windowContentOverlay">@null</item> <!-- отключаем оверлей содержимого окна -->
+        <item name="android:windowNoTitle">true</item> <!-- отключаем заголовок -->
+        <item name="android:windowIsFloating">true</item> <!-- окно в любой части экрана -->
+        <item name="android:backgroundDimEnabled">false</item> <!-- отключаем затемнение -->
+    </style>
 </resources>
