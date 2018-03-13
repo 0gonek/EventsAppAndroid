@@ -47,6 +47,9 @@ public interface ApiService {
             @Query("id") long id,
             @Query("event_id") long eventId,
             @Query("token") String token);
+    @GET("/events/get_public")
+    Single<PojoEvent> eventInfoPublic(
+            @Query("event_id") long eventId);
 
     @POST("/events/change")
     Single<Boolean> changeEvent(

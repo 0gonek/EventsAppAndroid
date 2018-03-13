@@ -10,6 +10,8 @@ import android.graphics.Color;
 import com.squareup.picasso.Picasso;
 import com.stfalcon.androidmvvmhelper.mvvm.fragments.FragmentViewModel;
 
+import org.reactivestreams.Publisher;
+
 import java.io.InputStream;
 
 import io.reactivex.Observable;
@@ -18,6 +20,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.annotations.NonNull;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 import jp.wasabeef.blurry.Blurry;
 import ru.pds.eventsapp.Helpers.RxBus;
 import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
@@ -44,12 +48,11 @@ public class ProfileAuthorizedFragmentVM extends FragmentViewModel<ProfileAuthor
         AuthenticatorSingleton.getInstance().deleteLogin(getFragment().getContext());
         RxBus.instanceOf().logged(new Object());
     }
-
+    public PublishSubject<Object> avatar = PublishSubject.create();
     public void updateUI(){
 
         name.set(AuthenticatorSingleton.getInstance().currentUser.name);
-        avatarListener.run();
-
+        avatar.onNext(new Object());
     }
 
     public Runnable avatarListener;

@@ -15,9 +15,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.res.ResourcesCompat;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -410,6 +412,42 @@ public class GroupActivity extends BindingActivity<ActivityGroupBinding, GroupAc
                     }
                 }
         );
+
+
+        getBinding().createGroupEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder popup = new AlertDialog.Builder(GroupActivity.this);
+                final View dialogView = LayoutInflater.from(GroupActivity.this).inflate(R.layout.new_event_dialog, null);
+
+                popup.setTitle("Новое мероприятие")
+                        .setView(dialogView)
+                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .setPositiveButton("СОЗДАТЬ", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Intent act = new Intent(GroupActivity.this, EventActivity.class);
+                                if (((EditText) dialogView.findViewById(R.id.name)).getText() == null || ((EditText) dialogView.findViewById(R.id.name)).getText().length() < 4) {
+                                    Toast.makeText(GroupActivity.this, "Длина имени должна быть не менее 4 символов", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                Bundle extras = new Bundle();
+                                extras.putString("newEventName", ((EditText) dialogView.findViewById(R.id.name)).getText().toString());
+                                extras.putLong("newGroupId", getViewModel().group.get().id);
+                                extras.putString("newGroupName", getViewModel().group.get().name);
+                                extras.putBoolean("eventAccepted", true);
+                                act.putExtras(extras);
+                                startActivity(act);
+                            }
+                        });
+                popup.create().show();
+            }
+        });
 
         return viewModel;
     }

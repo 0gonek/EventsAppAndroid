@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">EventsApp</string>
+    <string name="app_name">Walker</string>
     <string name="title_activity_main_map">Map</string>
     <string name="text_map">Карта</string>
     <string name="text_groups">Группы</string>

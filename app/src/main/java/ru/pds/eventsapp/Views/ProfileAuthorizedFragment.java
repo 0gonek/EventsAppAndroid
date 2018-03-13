@@ -217,9 +217,9 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
         configureFab();
         configureTab();
 
-        viewModel.avatarListener = new Runnable() {
+        viewModel.avatar.observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Object>() {
             @Override
-            public void run() {
+            public void accept(@NonNull Object o) throws Exception {
                 Picasso.with(getContext())
                         .load(AuthenticatorSingleton.getInstance().currentUser.avatar)
                         .placeholder(R.drawable.com_facebook_profile_picture_blank_square)
@@ -254,9 +254,9 @@ public class ProfileAuthorizedFragment extends BindingFragment<ProfileAuthorized
                 Picasso.with(getContext())
                         .load(AuthenticatorSingleton.getInstance().currentUser.avatar)
                         .into(target);
-
             }
-        };
+        });
+
 
 
         return viewModel;

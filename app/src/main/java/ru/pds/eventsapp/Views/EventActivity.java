@@ -46,6 +46,7 @@ import ru.pds.eventsapp.Models.PojoNewEvent;
 import ru.pds.eventsapp.R;
 import ru.pds.eventsapp.BR;
 
+import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.games.event.Event;
@@ -328,6 +329,9 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
     }
 
     void fillEditFields() {
+        if(getViewModel().event.get().groupId==null||getViewModel().event.get().groupId<=0)
+            getBinding().privacyCheckbox.setVisibility(View.INVISIBLE);
+
         if (editMode && !createMode) {
             getBinding().eventNameEdit.setText(getBinding().eventName.getText().toString());
             getBinding().groupNameEdit.setText(getBinding().groupName.getText().toString());
@@ -430,7 +434,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
     public EventActivityVM onCreate() {
         _ctx = this;
 
-        EventActivityVM viewModel = new EventActivityVM(this);
+        final EventActivityVM viewModel = new EventActivityVM(this);
         viewModel.configureFab.observeOn(AndroidSchedulers.mainThread()).subscribe(new Consumer<Object>() {
             @Override
             public void accept(@NonNull Object o) throws Exception {
@@ -477,8 +481,17 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
                     new Runnable() {
                         @Override
                         public void run() {
-                            getBinding().eventNameEdit.setText(getIntent().getStringExtra("newEventName"));
-                            getBinding().groupNameEdit.setText(getIntent().getStringExtra("newEventGroup"));
+                            PojoEvent init = new PojoEvent();
+
+                            init.name = getIntent().getStringExtra("newEventName");
+                            init.groupName = getIntent().getStringExtra("newGroupName");
+                            init.groupId = getIntent().getLongExtra("newGroupId",0L);
+                            init.accepted = false;
+                            init.id = getIntent().getLongExtra("eventId", 0);
+                            viewModel.putData(init);
+
+                            getBinding().eventNameEdit.setText(init.name);
+                            getBinding().groupNameEdit.setText(init.groupName);
                             rippleEditOn();
                         }
                     });
@@ -489,9 +502,10 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
             if (getIntent().getStringExtra("eventInfo") != null && getIntent().getStringExtra("eventInfo").length() != 0) {
                 init = new GsonBuilder().create().fromJson(getIntent().getStringExtra("eventInfo"), PojoEvent.class);
                 viewModel.putData(init);
+
             } else {
                 init.name = getIntent().getStringExtra("eventName");
-                init.groupId = 0L;
+                init.groupId = getIntent().getLongExtra("eventGroupId",0L);
                 init.description = getIntent().getStringExtra("eventDesc");
                 init.accepted = getIntent().getBooleanExtra("eventAccepted", false);
                 init.id = getIntent().getLongExtra("eventId", 0);
@@ -499,9 +513,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
                 viewModel.fetchEvent();
             }
         }
-
         configurePickers();
-
         getBinding().fab.setOnClickListener(this);
 
         createTransition();
@@ -545,7 +557,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
         PojoNewEvent newEvent = new PojoNewEvent();
         newEvent.name = getBinding().eventNameEdit.getText().toString();
         newEvent.date = parseDate(getBinding().whenEdit.getText() + " " + getBinding().whenTime.getText());
-        newEvent.groupId = null;
+        newEvent.groupId = getViewModel().event.get().groupId;
 
 
         if (newEvent.date == null) {
@@ -638,8 +650,7 @@ public class EventActivity extends BindingActivity<ActivityEventBinding, EventAc
 
 
     private boolean canEdit() {
-
-        if (getViewModel().event.get() != null && getViewModel().event.get().ownerId != null)
+       if (getViewModel()!=null&&getViewModel().event.get() != null && getViewModel().event.get().ownerId != null)
             return getViewModel().event.get().ownerId == AuthenticatorSingleton.getInstance().currentUser.serverID;
         else
             return false;

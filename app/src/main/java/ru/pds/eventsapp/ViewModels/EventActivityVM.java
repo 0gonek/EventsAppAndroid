@@ -147,6 +147,7 @@ public class EventActivityVM extends ActivityViewModel<EventActivity> {
 
         PojoChangeEvent changeEvent = new PojoChangeEvent();
         changeEvent.date = newEvent.date;
+        changeEvent.ownerId = AuthenticatorSingleton.getInstance().currentUser.serverID;
         changeEvent.description = newEvent.description;
         changeEvent.duration = newEvent.duration;
         changeEvent.latitude = newEvent.latitude;
@@ -159,7 +160,7 @@ public class EventActivityVM extends ActivityViewModel<EventActivity> {
         changedEvent.name = event.get().name;
         changedEvent.groupId = event.get().groupId;
         changedEvent.groupName = event.get().groupName;
-        changedEvent.ownerId = event.get().ownerId;
+
         changedEvent.accepted = event.get().accepted;
         changedEvent.id = event.get().id;
         changedEvent.type = event.get().type;

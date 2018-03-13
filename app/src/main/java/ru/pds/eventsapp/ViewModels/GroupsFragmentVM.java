@@ -2,6 +2,7 @@ package ru.pds.eventsapp.ViewModels;
 
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
 import com.stfalcon.androidmvvmhelper.mvvm.fragments.FragmentViewModel;
 
 import io.reactivex.Observable;
@@ -12,6 +13,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import ru.pds.eventsapp.Models.PojoGroupIdNames;
+import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
 import ru.pds.eventsapp.Singletones.WalkerApi;
 import ru.pds.eventsapp.Views.GroupsFragment;
 
@@ -22,6 +24,8 @@ public class GroupsFragmentVM extends FragmentViewModel<GroupsFragment> {
 
 
     public void loadGroups() {
+        if(AuthenticatorSingleton.getInstance().currentUser==null)
+            return;
         WalkerApi.getInstance().getOwnGroups().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                         new Consumer<PojoGroupIdNames>() {

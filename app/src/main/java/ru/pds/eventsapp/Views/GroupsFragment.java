@@ -22,6 +22,7 @@ import ru.pds.eventsapp.BR;
 
 import com.stfalcon.androidmvvmhelper.mvvm.fragments.BindingFragment;
 
+import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
 import ru.pds.eventsapp.ViewModels.GroupsFragmentVM;
 import ru.pds.eventsapp.databinding.FragmentGroupsBinding;
 
@@ -44,57 +45,60 @@ public class GroupsFragment extends BindingFragment<GroupsFragmentVM, FragmentGr
         GroupsFragmentVM vm = new GroupsFragmentVM(this);
         getBinding().groupsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        if(AuthenticatorSingleton.getInstance().currentUser!=null) {
+            getBinding().floatingActionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder popup = new AlertDialog.Builder(getActivity());
+                    final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.new_group_dialog, null);
 
-        getBinding().floatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AlertDialog.Builder popup = new AlertDialog.Builder(getActivity());
-                final View dialogView = LayoutInflater.from(getContext()).inflate(R.layout.new_group_dialog, null);
+                    popup.setTitle("Новая группа")
+                            .setView(dialogView)
+                            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
-                popup.setTitle("Новая группа")
-                        .setView(dialogView)
-                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-
-                            }
-                        })
-                        .setPositiveButton("СОЗДАТЬ", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                Intent act = new Intent(getActivity(), GroupActivity.class);
-                                if (((EditText) dialogView.findViewById(R.id.group)).getText() == null || ((EditText) dialogView.findViewById(R.id.group)).getText().length() < 4) {
-                                    Toast.makeText(getContext(), "Длина группы должна быть не менее 4 символов", Toast.LENGTH_SHORT).show();
-                                    return;
                                 }
-                                Bundle extras = new Bundle();
-                                extras.putString("newGroupName", ((EditText) dialogView.findViewById(R.id.group)).getText().toString());
-                                extras.putBoolean("eventAccepted", true);
-                                act.putExtras(extras);
-                                startActivity(act);
-                            }
-                        });
-                popup.create().show();
-            }
-        });
-
-        getBinding().searchEditText.setAdapter(new GroupsSearchAdapter(getContext()));
-
-
-        vm.updateAdapter.subscribe(new Consumer<PojoGroupIdNames>() {
-            @Override
-            public void accept(@NonNull PojoGroupIdNames pojoGroupIdNames) throws Exception {
-
-                if(pojoGroupIdNames!=null&&pojoGroupIdNames.pojoGroupIdNames!=null&&pojoGroupIdNames.pojoGroupIdNames.length>0){
-                    getBinding().error.setVisibility(View.GONE);
-                    getBinding().groupsRecycler.setAdapter(new GroupsAdapter(pojoGroupIdNames.pojoGroupIdNames));
-                }else{
-                    getBinding().error.setVisibility(View.VISIBLE);
-                    getBinding().error.setText("Вы не подписаны ни на одну группу");
-
+                            })
+                            .setPositiveButton("СОЗДАТЬ", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Intent act = new Intent(getActivity(), GroupActivity.class);
+                                    if (((EditText) dialogView.findViewById(R.id.group)).getText() == null || ((EditText) dialogView.findViewById(R.id.group)).getText().length() < 4) {
+                                        Toast.makeText(getContext(), "Длина группы должна быть не менее 4 символов", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    Bundle extras = new Bundle();
+                                    extras.putString("newGroupName", ((EditText) dialogView.findViewById(R.id.group)).getText().toString());
+                                    extras.putBoolean("eventAccepted", true);
+                                    act.putExtras(extras);
+                                    startActivity(act);
+                                }
+                            });
+                    popup.create().show();
                 }
-            }
-        });
+            });
+
+            getBinding().searchEditText.setAdapter(new GroupsSearchAdapter(getContext()));
+
+
+            vm.updateAdapter.subscribe(new Consumer<PojoGroupIdNames>() {
+                @Override
+                public void accept(@NonNull PojoGroupIdNames pojoGroupIdNames) throws Exception {
+
+                    if (pojoGroupIdNames != null && pojoGroupIdNames.pojoGroupIdNames != null && pojoGroupIdNames.pojoGroupIdNames.length > 0) {
+                        getBinding().error.setVisibility(View.GONE);
+                        getBinding().groupsRecycler.setAdapter(new GroupsAdapter(pojoGroupIdNames.pojoGroupIdNames));
+                    } else {
+                        getBinding().error.setVisibility(View.VISIBLE);
+                        getBinding().error.setText("Вы не подписаны ни на одну группу");
+
+                    }
+                }
+            });
+        }else{
+            getBinding().error.setText("Авторизируйтесь чтобы просматривать этот экран");
+        }
         return vm;
     }
 

@@ -11,6 +11,7 @@ import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -41,8 +42,12 @@ import ru.pds.eventsapp.Models.PojoEventsForMap;
 import ru.pds.eventsapp.R;
 import ru.pds.eventsapp.BR;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -70,6 +75,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import ru.pds.eventsapp.Singletones.AuthenticatorSingleton;
 import ru.pds.eventsapp.Singletones.WalkerApi;
 import ru.pds.eventsapp.ViewModels.MapFragmentVM;
 import ru.pds.eventsapp.databinding.FragmentMapBinding;
@@ -89,7 +95,7 @@ class EventInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
     @Override
     public View getInfoWindow(Marker marker) {
-        ContextThemeWrapper wrapper = new ContextThemeWrapper(_activity.getApplicationContext(),R.style.TransparentBackground);
+        ContextThemeWrapper wrapper = new ContextThemeWrapper(_activity.getApplicationContext(), R.style.TransparentBackground);
         LayoutInflater inflater = (LayoutInflater) wrapper.getSystemService(LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.map_info_window, null);
 
@@ -116,7 +122,7 @@ class EventInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
             ((TextView) layout.findViewById(R.id.eventDate)).setText(new SimpleDateFormat("dd MMM, yyyy г., HH:mm").format(new Date(pojoEvent.date)));
 
 
-            if(MapFragment.infoWindowBitmap!=null)
+            if (MapFragment.infoWindowBitmap != null)
                 ((ImageView) layout.findViewById(R.id.eventPic)).setImageBitmap(MapFragment.infoWindowBitmap);
             return layout;
         }
@@ -132,10 +138,31 @@ class EventInfoWindowAdapter implements GoogleMap.InfoWindowAdapter {
 
 public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBinding> implements OnMapReadyCallback {
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        if ((hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) && requestCode == 1000) {
+            mMap.setMyLocationEnabled(true);
+            return;
+        }
+    }
+
+    private boolean hasPermission(String perm) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            return (PackageManager.PERMISSION_GRANTED == getActivity().checkSelfPermission(perm));
+        } else {
+            return true;
+        }
+    }
+
+
     public MapFragment() {
         // Required empty public constructor
     }
-    public static Bitmap infoWindowBitmap=null;
+
+    public static Bitmap infoWindowBitmap = null;
+
     public Bitmap getBitmapFromURL(String src) {
         try {
             java.net.URL url = new java.net.URL(src);
@@ -162,8 +189,10 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
         // Add a marker in Sydney and move the camera
         LatLng moscow = new LatLng(55.751244, 37.618423);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(moscow));
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
             mMap.setMyLocationEnabled(true);
+        } else {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1000);
         }
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(true);
@@ -182,6 +211,10 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
+
+                if (AuthenticatorSingleton.getInstance().currentUser == null)
+                    return;
+
                 if (marker.getSnippet() != null && marker.getSnippet().length() != 0) {
                     Intent intent = new Intent(getActivity(), EventActivity.class);
                     Bundle extras = new Bundle();
@@ -293,6 +326,7 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
 
         MapFragmentVM fragmentVM = new MapFragmentVM(this);
 
+
         fragmentVM.drawMarkers = new Consumer<PojoEventsForMap>() {
             @Override
             public void accept(@NonNull PojoEventsForMap pojoEventsForMap) throws Exception {
@@ -300,8 +334,8 @@ public class MapFragment extends BindingFragment<MapFragmentVM, FragmentMapBindi
             }
         };
 
-
-        getBinding().searchEditText.setAdapter(new EventsSearchAdapter(getContext()));
+        if (AuthenticatorSingleton.getInstance().currentUser != null)
+            getBinding().searchEditText.setAdapter(new EventsSearchAdapter(getContext()));
 
         return fragmentVM;
     }

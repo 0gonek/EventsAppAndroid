@@ -131,6 +131,31 @@
                                 android:id="@+id/imageView3"
                                 android:layout_centerVertical="true" />
                         </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:id="@+id/createGroupEvent"
+                            android:background="?selectableItemBackground"
+                            android:clickable="true"
+                            android:paddingLeft="16dp"
+                            android:paddingRight="16dp">
+
+                            <TextView
+                                android:text="Создать мероприятие для группы"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/createGroupEventText"
+                                android:textSize="14sp"
+                                android:layout_marginLeft="46dp"
+                                android:layout_centerVertical="true" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_add_gray_24dp"
+                                android:id="@+id/imageView10"
+                                android:layout_centerVertical="true" />
+                        </RelativeLayout>
 
                     </LinearLayout>
                 </LinearLayout>
